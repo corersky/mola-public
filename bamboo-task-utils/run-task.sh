@@ -194,8 +194,8 @@ setAnt() {
             *) die "Unexpected ANT Version '$1'";;
         esac
         [ -e "$antDir" ] || die "Directory '$antDir' not found."
-        exec export ANT_HOME="$antDir"
-        exec export PATH="$antDir/bin:$PATH"
+        export ANT_HOME="$antDir"
+        export PATH="$antDir/bin:$PATH"
     else
         echoInfo "Not on CI Server - Not setting ANT."
     fi
