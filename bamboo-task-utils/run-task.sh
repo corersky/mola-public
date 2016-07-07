@@ -267,7 +267,7 @@ runJob() {
             if [ $needsAnt -eq 1 ]; then
                 runBasicAnt 17 19 'clean-all findbugs-core'
             else
-                runBasicGradle 17 findbugsCore
+                runBasicGradle 17 19 findbugsCore
             fi
             ;;
 
@@ -276,7 +276,7 @@ runJob() {
             if [ $needsAnt -eq 1 ]; then
                 runBasicAnt 17 19 'clean-all findbugs-plugins'
             else
-                runBasicGradle 17 findbugsMain
+                runBasicGradle 17 19 findbugsMain
             fi
             ;;
 
@@ -285,7 +285,7 @@ runJob() {
             if [ $needsAnt -eq 1 ]; then
                 runBasicAnt 17 19 "clean-all unit"
             else
-                runBasicGradle 17 test
+                runBasicGradle 17 19 test
             fi
             ;;
 
