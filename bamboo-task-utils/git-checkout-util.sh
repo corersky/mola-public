@@ -16,8 +16,8 @@ if [ -n "$bamboo_build_working_directory" ]; then
 	buildSubString="bamboo-home/xml-data/build-dir"
 	[[ "$bamboo_build_working_directory" == *"$buildSubString"* ]] || die "Working directory '$bamboo_build_working_directory' does not contain sub-string '$buildSubString' "
 	# pre-checkout cleaning...
-	logInfo "Listing bamboo_build_working_directory BEFORE..."
-	ls -al "$bamboo_build_working_directory"
+	#logInfo "Listing bamboo_build_working_directory BEFORE..."
+	#ls -al "$bamboo_build_working_directory"
 	logInfo "Cleaning bamboo_build_working_directory '$bamboo_build_working_directory'..."
 	cd "$bamboo_build_working_directory" && rm -rf ..?* .[!.]* *
 	logInfo "Listing bamboo_build_working_directory AFTER..."

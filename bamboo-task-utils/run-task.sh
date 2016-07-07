@@ -189,8 +189,8 @@ setAnt() {
     if onBamboo; then
         local antDir
         case "$1" in
-            184) antDir="$bamboo_capability_system_builder_ant_Ant_1_8_4";;
-            194) antDir="$bamboo_capability_system_builder_ant_Ant_1_9_4";;
+            18) antDir="$bamboo_capability_system_builder_ant_Ant_1_8_4";;
+            19) antDir="$bamboo_capability_system_builder_ant_Ant_1_9_4";;
             *) die "Unexpected ANT Version '$1'";;
         esac
         [ -e "$antDir" ] || die "Directory '$antDir' not found."
