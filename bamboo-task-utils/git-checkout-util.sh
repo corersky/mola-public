@@ -13,7 +13,7 @@ die() {
 }
 if [ -n "$bamboo_build_working_directory" ]; then
 	# sanity check - make sure we are deleting the right thing
-	local buildSubString="bamboo-home/xml-data/build-dir"
+	buildSubString="bamboo-home/xml-data/build-dir"
 	[[ "$bamboo_build_working_directory" == *"$buildSubString"* ]] || die "Working directory '$bamboo_build_working_directory' does not contain sub-string '$buildSubString' "
 	# pre-checkout cleaning...
 	logInfo "Listing bamboo_build_working_directory BEFORE..."
