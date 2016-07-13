@@ -19,7 +19,10 @@ declare -A myEnvVariables
 
 #$ curl -sSk --user $BAM_API_USER:$BAM_API_PW "https://build.datameer.com/rest/api/latest/project/MASTER.json?expand=plans.plan.stages.stage.plans.plan" | python -m json.tool | grep "                                        \"name.*," | sed 's/.*"name\": \"//' | sed 's/\",$//'
 declare -A jobNames
-jobNames[compile]='Datameer - Master Branch - Compile Datameer distributions - it-jar and job-jar'
+jobNames[compile]='Datameer - Green Builds - Compile Datameer Distributions - it-jar and job-jar'
+jobNames[findbugs]='Datameer - Green Builds - Unit Tests - findbugs'
+jobNames[unitTests]='Datameer - Green Builds - Unit Tests - Unit Tests'
+
 jobNames[dbLocal]='Datameer - Master Branch - Database Tests - Local Database Tests'
 jobNames[dbRemote]='Datameer - Master Branch - Database Tests - Remote Database Tests'
 jobNames[itTestsCluster]='Datameer - Master Branch - Embedded Cluster (APACHE-2.6.0) - Integration Tests'
@@ -49,7 +52,6 @@ jobNames[findbugsPlugins1.8]='Datameer - Master Branch - Unit Test (JDK-1.8) - F
 jobNames[unitTests1.8]='Datameer - Master Branch - Unit Test (JDK-1.8) - Unit Tests'
 jobNames[findbugsCore]='Datameer - Master Branch - Unit Tests - Findbugs'
 jobNames[findbugsPlugins]='Datameer - Master Branch - Unit Tests - Findbugs plugins'
-jobNames[unitTests]='Datameer - Master Branch - Unit Tests - Unit Tests'
 
 
 buildProperties="src/build/ant/build.properties"
@@ -134,6 +136,19 @@ dapVersionCheck() {
     local version="$(grep -oE "^version=.*" $buildProperties | cut -f2 -d'=')"
     echoInfo "Found DAP version: '$version'"
     [ ${version/\.*/} -lt 6 ] && needsAnt=1 || needsAnt=0
+}
+
+atLeastVersion() {
+	local atLeastRaw=$1
+	local atLeast=$(echo $atLeastRaw | sed 's/\(\.0\)*$//')
+	echoDebug "At least version: '$atLeast' (normalised from $atLeastRaw)"
+    [ ! -e $buildProperties ] && die "Cannot find file '$buildProperties'"
+	local versionRaw="$(grep -oE "^version=.*" $buildProperties | cut -f2 -d'=')"
+	local version=$(echo $versionRaw | sed 's/\(\.0\)*$//')
+    echoInfo "Found DAP version: '$version' (normalised from $versionRaw). Comparing to version $atLeast"
+	local latestVersion=$(echo -e "$atLeast\n$version" | sort -t '.' -k 1,1 -k 2,2 -k 3,3 -k 4,4 -g | tail -n 1)
+	echoDebug "Latest version determined as: '$latestVersion'"
+	[ "$latestVersion" == "$atLeast" ]
 }
 
 checkJdk() {
@@ -252,40 +267,49 @@ runJob() {
 
         'compile'|${jobNames['compile']})
             echoInfo "Running...$jobInQuestion"
-            if [ $needsAnt -eq 1 ]; then
-                runBasicAnt 17 19 'clean-all it-jar job-jar'
-            else
-                local tmpDir=/tmp/gradlehome/${bamboo_buildKey:-local-run}
+            if atLeastVersion 6; then
+				local tmpDir=/tmp/gradlehome/${bamboo_buildKey:-local-run}
                 mkdir -pv $tmpDir
                 runBasicGradle 17 19 "onAllVersions -i -Ptarget=it-jar --gradle-user-home $tmpDir"
                 runBasicGradle 17 19 "onAllVersions -i -Ptarget=job-jar --gradle-user-home $tmpDir"
+            else
+				runBasicAnt 17 19 'clean-all it-jar job-jar'
             fi
             ;;
 
-        'findbugsCore'|${jobNames['findbugsCore']})
+		'findbugs'|${jobNames['findbugs']})
             echoInfo "Running...$jobInQuestion"
-            if [ $needsAnt -eq 1 ]; then
-                runBasicAnt 17 19 'clean-all findbugs-core'
+            if atLeastVersion 6; then
+				runBasicGradle 17 19 findbugs
             else
-                runBasicGradle 17 19 findbugsCore
+				runBasicAnt 17 19 'clean-all findbugs-core findbugs-plugins'
+            fi
+            ;;
+
+		'findbugsCore'|${jobNames['findbugsCore']})
+            echoInfo "Running...$jobInQuestion"
+            if atLeastVersion 6; then
+				runBasicGradle 17 19 findbugsCore
+            else
+				runBasicAnt 17 19 'clean-all findbugs-core'
             fi
             ;;
 
         'findbugsPlugins'|${jobNames['findbugsPlugins']})
             echoInfo "Running...$jobInQuestion"
-            if [ $needsAnt -eq 1 ]; then
-                runBasicAnt 17 19 'clean-all findbugs-plugins'
+			if atLeastVersion 6; then
+				runBasicGradle 17 19 findbugsMain
             else
-                runBasicGradle 17 19 findbugsMain
+				runBasicAnt 17 19 'clean-all findbugs-plugins'
             fi
             ;;
 
         'unitTests'|${jobNames['unitTests']})
             echoInfo "Running...$jobInQuestion"
-            if [ $needsAnt -eq 1 ]; then
-                runBasicAnt 17 19 "clean-all unit"
+            if atLeastVersion 6.2; then
+				runBasicGradle 17 19 test
             else
-                runBasicGradle 17 19 test
+				runBasicAnt 17 19 "clean-all unit"
             fi
             ;;
 
@@ -298,5 +322,11 @@ runJob() {
 ###############################################
 # Program
 ###############################################
+# atLeastVersion 6 && echo "6 yes" || echo "6 no"
+# atLeastVersion 6.2 && echo "6.2 yes" || echo "6.2 no"
+# atLeastVersion 6.11 && echo "6.11 yes" || echo "6.11 no"
+# atLeastVersion 6.2.0 && echo "6.2.0 yes" || echo "6.2.0 no"
+# atLeastVersion 6.1.9 && echo "6.1.9 yes" || echo "6.1.9 no"
 runJob "${JOB_ARG:-}"
 [ $? -eq 0 ] && echo "Done!"
+
