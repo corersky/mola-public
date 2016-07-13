@@ -192,8 +192,8 @@ setJdk() {
             *) die "Unexpected JDK Version '$1'";;
         esac
         [ -e "$jdkDir" ] || die "Directory '$jdkDir' not found."
-        export JAVA_HOME="'$jdkDir'"
-        export PATH="'$jdkDir/bin:$PATH'"
+        export JAVA_HOME="$jdkDir"
+        export PATH="$jdkDir/bin:$PATH"
     else
         echoInfo "Not on CI Server - Not setting JDK."
     fi
@@ -209,8 +209,8 @@ setAnt() {
             *) die "Unexpected ANT Version '$1'";;
         esac
         [ -e "$antDir" ] || die "Directory '$antDir' not found."
-        export ANT_HOME="'$antDir'"
-        export PATH="'$antDir/bin:$PATH'"
+        export ANT_HOME="$antDir"
+        export PATH="$antDir/bin:$PATH"
     else
         echoInfo "Not on CI Server - Not setting ANT."
     fi
