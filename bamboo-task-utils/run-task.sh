@@ -148,7 +148,7 @@ atLeastVersion() {
     echoInfo "Found DAP version: '$version' (normalised from $versionRaw). Comparing to version $atLeast"
 	local latestVersion=$(echo -e "$atLeast\n$version" | sort -t '.' -k 1,1 -k 2,2 -k 3,3 -k 4,4 -g | tail -n 1)
 	echoDebug "Latest version determined as: '$latestVersion'"
-	[ "$latestVersion" == "$atLeast" ]
+	[ "$latestVersion" == "$version" ]
 }
 
 checkJdk() {
@@ -322,11 +322,11 @@ runJob() {
 ###############################################
 # Program
 ###############################################
-# atLeastVersion 6 && echo "6 yes" || echo "6 no"
-# atLeastVersion 6.2 && echo "6.2 yes" || echo "6.2 no"
-# atLeastVersion 6.11 && echo "6.11 yes" || echo "6.11 no"
-# atLeastVersion 6.2.0 && echo "6.2.0 yes" || echo "6.2.0 no"
-# atLeastVersion 6.1.9 && echo "6.1.9 yes" || echo "6.1.9 no"
+atLeastVersion 6 && echo "6 yes" || echo "6 no"
+atLeastVersion 6.2 && echo "6.2 yes" || echo "6.2 no"
+atLeastVersion 6.11 && echo "6.11 yes" || echo "6.11 no"
+atLeastVersion 6.2.0 && echo "6.2.0 yes" || echo "6.2.0 no"
+atLeastVersion 6.1.9 && echo "6.1.9 yes" || echo "6.1.9 no"
 runJob "${JOB_ARG:-}"
 [ $? -eq 0 ] && echo "Done!"
 
