@@ -322,11 +322,11 @@ runJob() {
 ###############################################
 # Program
 ###############################################
-atLeastVersion 6 && echo "6 yes" || echo "6 no"
-atLeastVersion 6.2 && echo "6.2 yes" || echo "6.2 no"
-atLeastVersion 6.11 && echo "6.11 yes" || echo "6.11 no"
-atLeastVersion 6.2.0 && echo "6.2.0 yes" || echo "6.2.0 no"
-atLeastVersion 6.1.9 && echo "6.1.9 yes" || echo "6.1.9 no"
+# atLeastVersion 6 && echo "6 yes" || echo "6 no"
+# atLeastVersion 6.2 && echo "6.2 yes" || echo "6.2 no"
+# atLeastVersion 6.11 && echo "6.11 yes" || echo "6.11 no"
+# atLeastVersion 6.2.0 && echo "6.2.0 yes" || echo "6.2.0 no"
+# atLeastVersion 6.1.9 && echo "6.1.9 yes" || echo "6.1.9 no"
 runJob "${JOB_ARG:-}"
 [ $? -eq 0 ] && echo "Done!"
 
