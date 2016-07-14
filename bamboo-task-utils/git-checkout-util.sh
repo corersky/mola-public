@@ -1,7 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # http://redsymbol.net/articles/unofficial-bash-strict-mode/
 set -euo pipefail
 IFS=$'\n\t'
+
+gitRepoReferenceBase='/tmp/temp-git-repo-reference'
 
 logInfo() {
 	echo "LOG-INFO: $@"
@@ -11,6 +13,25 @@ die() {
 	(>&2 echo -e "ERROR: $@")
 	exit 1
 }
+
+setupGitRepositoryReference() {
+	# Here to stop problems with parallel runs on local agents. Every job has an AgentId and there can only be
+	# one job running per agent at any single point of time.
+	if [ -n "$bamboo_agentId" ]; then
+		logInfo "Found Bamboo AgentId: $bamboo_agentId. Checking for git repository reference."
+		gitRefLocation="$gitRepoReferenceBase/agent_$bamboo_agentId/${bamboo_planRepository_repositoryUrl//*\/}.reference"
+		if [ ! -d "$gitRefLocation" ]; then
+			logInfo "First time checkout of reference repository '$gitRefLocation'."
+			mkdir -p $gitRefLocation
+			if ! git clone "$bamboo_planRepository_repositoryUrl" $gitRefLocation; then
+				rm -rf "$gitRefLocation"
+			fi
+		else
+			logInfo "Found git reference repository '$gitRefLocation'."
+		fi
+	fi
+}
+
 if [ -n "$bamboo_build_working_directory" ]; then
 	# sanity check - make sure we are deleting the right thing
 	buildSubString="bamboo-home/xml-data/build-dir"
@@ -22,9 +43,17 @@ if [ -n "$bamboo_build_working_directory" ]; then
 	cd "$bamboo_build_working_directory" && rm -rf ..?* .[!.]* *
 	logInfo "Listing bamboo_build_working_directory AFTER..."
 	ls -al
-	# checkout ad branch handling...
+	# checkout and branch handling...
+	setupGitRepositoryReference;
+	if [ -n "$gitRefLocation" ]; then
+		logInfo "Checking out using reference repo '$gitRefLocation'."
+		git clone --reference $gitRefLocation "$bamboo_planRepository_repositoryUrl" . && git repack -a -d && find $(find . -name .git) -name alternates | xargs rm
+		git checkout $bamboo_planRepository_revision
+	else
+		logInfo "Checking out WITHOUT using reference repo."
+		git clone "$bamboo_planRepository_repositoryUrl" .
+	fi
 	logInfo "Checking out '$bamboo_planRepository_branchName' with rev '$bamboo_planRepository_revision'"
-	git clone "$bamboo_planRepository_repositoryUrl" .
 	git checkout $bamboo_planRepository_revision
 else
     die "No bamboo_build_working_directory set"
