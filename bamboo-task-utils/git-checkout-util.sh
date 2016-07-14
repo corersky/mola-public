@@ -3,7 +3,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-gitRepoReferenceBase='/tmp/temp-git-repo-reference'
+gitRepoReferenceBase='/home/bamboo/.temp-git-repo-reference'
 
 logInfo() {
 	echo "LOG-INFO: $@"
