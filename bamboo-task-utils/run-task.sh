@@ -10,52 +10,31 @@ IFS=$'\n\t'
 BAMBOO_EC2_PROPS='/home/bamboo/.ec2/ec2.properties'
 BAMBOO_JDK_8_STRING='JDK-1.8'
 BAMBOO_JDK_DEFAULT='JDK-1.7'
-
-ANT_OPTS_BASIC="-Dhalt.on.failure=false -Dmysql.tests.enabled=true -Xmx512m -XX:MaxPermSize=256m"
 GRADLE_WRAPPER='./gradlew'
-
-declare -A myEnvVariables
-
-
-#$ curl -sSk --user $BAM_API_USER:$BAM_API_PW "https://build.datameer.com/rest/api/latest/project/MASTER.json?expand=plans.plan.stages.stage.plans.plan" | python -m json.tool | grep "                                        \"name.*," | sed 's/.*"name\": \"//' | sed 's/\",$//'
-declare -A jobNames
-jobNames[compile]='Datameer - Green Builds - Compile Datameer Distributions - it-jar and job-jar'
-jobNames[findbugs]='Datameer - Green Builds - Unit Tests - findbugs'
-jobNames[unitTests]='Datameer - Green Builds - Unit Tests - Unit Tests'
-
-jobNames[dbLocal]='Datameer - Master Branch - Database Tests - Local Database Tests'
-jobNames[dbRemote]='Datameer - Master Branch - Database Tests - Remote Database Tests'
-jobNames[itTestsCluster]='Datameer - Master Branch - Embedded Cluster (APACHE-2.6.0) - Integration Tests'
-jobNames[itTestsEC2]='Datameer - Master Branch - Full YARN Cluster Test (HDP-2.1.2) - EC2 Integration Tests'
-jobNames[itTests]='Datameer - Master Branch - Integration Tests - Integration Tests'
-jobNames[itTests1.8]='Datameer - Master Branch - Integration Tests (JDK-1.8) - Integration Tests'
-jobNames[jsSpecs]='Datameer - Master Branch - JavaScript Specifications - Specs'
-jobNames[localEF]='Datameer - Master Branch - Local Execution Framework - Default'
-jobNames[itTestsLong]='Datameer - Master Branch - Long Running Integration Tests - Default Job'
-jobNames[itTestsLong1.8]='Datameer - Master Branch - Long Running Integration Tests (JDK-1.8) - Default Job'
-jobNames[mixedEF]='Datameer - Master Branch - Mixed Execution Framework (CDH-5.0.5) - Default Job'
-jobNames[parquetItTestsEmbedded]='Datameer - Master Branch - Parquet Storage Format - Embedded Cluster'
-jobNames[parquetItTests]='Datameer - Master Branch - Parquet Storage Format - Integration Tests'
-jobNames[parquetItTestsLong]='Datameer - Master Branch - Parquet Storage Format - Long Running Tests'
-jobNames[parquetUnitTests]='Datameer - Master Branch - Parquet Storage Format - Unit Tests'
-jobNames[smallEF]='Datameer - Master Branch - Small Job Execution Framework (CDH-5.0.5) - Default Job'
-jobNames[smartEF]='Datameer - Master Branch - Smart Execution Framework (CDH-5.1.0) - Default Job'
-jobNames[sparkClientEF]='Datameer - Master Branch - Spark Client Execution Framework (CDH-5.4.2) - Default Job'
-jobNames[sparkClientEFFull]='Datameer - Master Branch - Spark Client Execution Framework (full) - Default Job'
-jobNames[sparkClusterEF]='Datameer - Master Branch - Spark Cluster Execution Framework (CDH-5.4.2) - Default Job'
-jobNames[sparkClusterEFFull]='Datameer - Master Branch - Spark Cluster Execution Framework (full) - Default Job'
-jobNames[sparkSxEF]='Datameer - Master Branch - Spark SX Framework (CDH-5.4.2) - Default Job'
-jobNames[tezEF]='Datameer - Master Branch - Tez Execution Cluster (HDP-2.1.2) - Default Job'
-jobNames[tezEFFast]='Datameer - Master Branch - Tez Execution Cluster Fast (CDH-5.3.0) - Default Job'
-jobNames[findbugsCore1.8]='Datameer - Master Branch - Unit Test (JDK-1.8) - Findbugs core'
-jobNames[findbugsPlugins1.8]='Datameer - Master Branch - Unit Test (JDK-1.8) - Findbugs plugins'
-jobNames[unitTests1.8]='Datameer - Master Branch - Unit Test (JDK-1.8) - Unit Tests'
-jobNames[findbugsCore]='Datameer - Master Branch - Unit Tests - Findbugs'
-jobNames[findbugsPlugins]='Datameer - Master Branch - Unit Tests - Findbugs plugins'
-
-
 buildProperties="src/build/ant/build.properties"
 
+# util to get a green build name
+getGB() { echo "Datameer - Green Builds - $@ - job"; }
+declare -A jobNames
+jobNames[compile]="$(getGB 'Compile Datameer Distributions')"
+jobNames[findbugs]="$(getGB 'Findbugs')"
+jobNames[unitTests]="$(getGB 'Unit Tests')"
+jobNames[itTests]="$(getGB 'Integration Tests')"
+jobNames[itTestsLong]="$(getGB 'Long Running Integration Tests')"
+jobNames[jsSpecs]="$(getGB 'Javascript Specs')"
+jobNames[embeddedCluster]="$(getGB 'Embedded Cluster')"
+jobNames[efwLocal]="$(getGB 'EFW Local')"
+jobNames[efwSmallJob]="$(getGB 'EFW Small Job')"
+jobNames[efwSmart]="$(getGB 'EFW Smart')"
+jobNames[efwSparkClient]="$(getGB 'EFW Spark Client')"
+jobNames[efwSparkCluster]="$(getGB 'EFW Spark Cluster')"
+jobNames[efwSparkSX]="$(getGB 'EFW Spark SX')"
+jobNames[efwTez]="$(getGB 'EFW Tez')"
+jobNames[findbugs18]="$(getGB 'Findbugs (JDK-1.8)')"
+jobNames[unitTests18]="$(getGB 'Unit Tests (JDK-1.8)')"
+jobNames[itTests18]="$(getGB 'Integration Tests (JDK-1.8)')"
+jobNames[localDB]="$(getGB 'Local Database Tests')"
+jobNames[remoteDB]="$(getGB 'Remote Database Tests')"
 
 usage()
 {
@@ -77,32 +56,6 @@ EOF
 VERBOSE=0
 DRYRUN=0
 
-# Options parsing
-while getopts “:hvdj:” OPTION
-do
-     case $OPTION in
-    h)
-        usage
-        exit
-        ;;
-    d)
-        DRYRUN=1
-        ;;
-    j)
-        JOB_ARG=$OPTARG
-        ;;
-    J)
-        listJobs
-        ;;
-    v)
-        VERBOSE=1
-        ;;
-    ?)
-        die "Unrecognised option."
-        ;;
-    esac
-done
-
 die() {
     (>&2 echo -e "RUN-TASK - ERROR: $@")
     exit 1
@@ -120,22 +73,24 @@ echoDebug() {
 
 copyEc2Properties() {
     if [ -e "$BAMBOO_EC2_PROPS" ]; then
-        exec cp /home/bamboo/.ec2/ec2.properties "$bamboo_build_working_directory/modules/dap-common/src/it/resources/ec2.properties"
+        exec cp "$BAMBOO_EC2_PROPS" "$bamboo_build_working_directory/modules/dap-common/src/it/resources/ec2.properties"
     fi
 }
 
 listJobs() {
-    for i in "${!array[@]}"; do
-      echo "Short  : $i"
-      echo "value: ${array[$i]}"
+	printf "%-25s   %s\n" "SHORTNAME" "LONGNAME"
+	for i in "${!jobNames[@]}"; do
+		printf "%-25s   %s\n" "$i" "${jobNames[$i]}"
     done
-
 }
-dapVersionCheck() {
-    [ ! -e $buildProperties ] && die "Cannot find file '$buildProperties'"
-    local version="$(grep -oE "^version=.*" $buildProperties | cut -f2 -d'=')"
-    echoInfo "Found DAP version: '$version'"
-    [ ${version/\.*/} -lt 6 ] && needsAnt=1 || needsAnt=0
+
+listJobsAndDryRun() {
+	printf "%-25s   %s\n" "SHORTNAME" "LONGNAME"
+	for i in "${!jobNames[@]}"; do
+		printf "%-25s   %s\n" "$i" "${jobNames[$i]}"
+		setDryRun && setVerbose
+		runJob $i
+    done
 }
 
 atLeastVersion() {
@@ -162,7 +117,14 @@ checkJdk() {
         *) die "You must specify a version between 2 and 3 digits."
     esac
     echoInfo "Found java version: $version"
-    [ $expectedVersion -eq $version ] || die "Wrong java version found. Expected: $expectedVersion"
+    if [ $expectedVersion -ne $version ]; then
+		local errorMsg="Wrong java version found. Found '$version', expected '$expectedVersion'"
+		if [ $DRYRUN  -eq 1 ]; then
+	        echoInfo "DRYRUN: $errorMsg"
+		else
+			die "$errorMsg"
+	    fi
+ 	fi
 }
 
 checkAnt() {
@@ -176,7 +138,14 @@ checkAnt() {
         *) die "You must specify a version between 2 and 3 digits."
     esac
     echoInfo "Found ant version: $version"
-    [ $expectedVersion -eq $version ] || die "Wrong ant version found. Expected: $expectedVersion"
+	if [ $expectedVersion -ne $version ]; then
+		local errorMsg="Wrong ant version found. Found '$version', expected '$expectedVersion'"
+		if [ $DRYRUN  -eq 1 ]; then
+	        echoInfo "DRYRUN: $errorMsg"
+		else
+			die "$errorMsg"
+	    fi
+ 	fi
 }
 
 onBamboo() {
@@ -233,20 +202,20 @@ exec() {
     eval "$@"
 }
 
-runBasicAnt() {
+# environment variables need to be set before
+runAnt() {
     local jdkVersion=$1
     local antVersion=$2
     local target=$3
-    myEnvVariables[ANT_OPTS]="$ANT_OPTS_BASIC"
-    setEnvVars
     setJdk $jdkVersion
     setAnt $antVersion
     cmd="ant $target"
     echoInfo "Running... $cmd"
-    exec eval $cmd
+    exec $cmd
 }
 
-runBasicGradle() {
+# environment variables need to be set before
+runGradle() {
     [ -x $GRADLE_WRAPPER ] || die "File '$GRADLE_WRAPPER' either non-existent or not executable."
     local jdkVersion=$1
     local antVersion=$2
@@ -255,61 +224,292 @@ runBasicGradle() {
     setAnt $antVersion
     cmd="$GRADLE_WRAPPER $target"
     echoInfo "Running... $cmd"
-    exec eval $cmd
+    exec $cmd
 }
 
+getKey() {
+	for i in "${!jobNames[@]}"; do
+		if [ "$1" == "$i" ] || [ "$1" == "${jobNames[$i]}" ] ; then
+	  		echo "$i"
+		fi
+    done
+}
+
+optCommon() { echo "-Dhalt.on.failure=false -DshowOutput=false"; }
+optEFW() { echo "-Dexecution-framework=$1 -Dtest.groups=${2:-execution_framework}"; }
+optPlan() {
+	if onBamboo; then
+		echo "-Dplan.name=${bamboo_buildResultKey}-${bamboo_repository_branch.name}"
+	else
+		echo "-Dplan.name=${bamboo_buildResultKey:-dummyKey}-${bamboo_repository_branch_name:-dummyBranch}"
+	fi
+}
+optDist() { echo "-Dhadoop.dist=$1"; }
+optTestGroups() { echo "-Dtest.groups=$1"; }
+
 runJob() {
+	local ANT_OPTS_BASIC="$(optCommon) -Xmx512m  -XX:MaxPermSize=256m -Dmysql.tests.enabled=true"
+	local ANT_OPTS_IT_LONG="$(optCommon) -Xmx512m  -XX:MaxPermSize=256m"
+	local ANT_OPTS_IT="$(optCommon) -Xmx1024m -XX:MaxPermSize=256m"
+	local ANT_OPTS_CLUSTER="$(optCommon) -Xmx1024m -XX:MaxPermSize=256m $(optTestGroups cluster)"
+	local ANT_OPTS_CLUSTER_EC2="$(optCommon) -Xmx1024m -XX:MaxPermSize=256m $(optPlan)"
+	local ANT_OPTS_CLUSTER_EFW_LOCAL="$(optCommon) -Xmx512m -XX:MaxPermSize=256m $(optEFW Local)"
+	local ANT_OPTS_CLUSTER_EFW_SMALL="$(optCommon) -Xmx2048m $(optEFW SmallJob) $(optDist cdh-5.4.2-mr2) $(optPlan) -Dtest.cluster=ec2"
+	local ANT_OPTS_CLUSTER_EFW_MIXED="$(optCommon) -Xmx2048m $(optEFW ExampleMixed) $(optDist cdh-5.4.2-mr2) $(optPlan) -Dtest.cluster=ec2"
+	local ANT_OPTS_CLUSTER_EFW_SMART="$(optCommon) -Xmx2048m $(optEFW Smart) $(optDist cdh-5.4.2-mr2) $(optPlan) -Dtest.cluster=ec2"
+	local ANT_OPTS_CLUSTER_EFW_SPARK_CLIENT="$(optCommon) -Xmx2048m $(optEFW SparkClient cluster,dist_sanity) $(optDist cdh-5.4.2-mr2) $(optPlan) -Dtest.cluster=ec2 -DinstanceType=m3.large"
+	local ANT_OPTS_CLUSTER_EFW_SPARK_CLUSTER="$(optCommon) -Xmx2048m $(optEFW SparkCluster) $(optDist cdh-5.4.2-mr2) $(optPlan) -Dtest.cluster=ec2"
+	local ANT_OPTS_CLUSTER_EFW_SPARK_SX="$(optCommon) -Xmx2048m $(optEFW SparkSx) $(optDist cdh-5.4.2-mr2) $(optPlan) -Dtest.cluster=ec2"
+	local ANT_OPTS_CLUSTER_EFW_TEZ="$(optCommon) -Xmx2048m $(optEFW Tez dist_sanity) $(optDist cdh-5.4.2-mr2) $(optPlan) -Dtest.cluster=ec2"
+	# TODO: why -Dmysql.tests.enabled=true?
+	# TODO: why 1024m for some jobs and only 512m for others?
+
     local jobInQuestion="${1:-${bamboo_buildPlanName:-}}"
     [ -z "$jobInQuestion" ] && die "Neither bamboo_buildPlanName variable nor input argument passed."
-    dapVersionCheck # ant or gradle
-    echo "Looking for $jobInQuestion"
-    case "$jobInQuestion" in
+	local shortName=$(getKey "$jobInQuestion")
+	[ -n "$shortName" ] || die "Could not find '$jobInQuestion' in job list. Check the supported job list."
+    echo "Looking for '$jobInQuestion',  with shortName '$shortName'"
+	declare -A myEnvVariables # fresh set of envVars to fill on a per job basis
+    case "$shortName" in
 
-        'compile'|${jobNames['compile']})
+		# jobNames[compile]="$(getGB 'Compile Datameer Distributions')"
+		'compile')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
 				local tmpDir=/tmp/gradlehome/${bamboo_buildKey:-local-run}
-                mkdir -pv $tmpDir
-                runBasicGradle 17 19 "onAllVersions -i -Ptarget=it-jar --gradle-user-home $tmpDir"
-                runBasicGradle 17 19 "onAllVersions -i -Ptarget=job-jar --gradle-user-home $tmpDir"
+                exec mkdir -pv $tmpDir
+                runGradle 17 19 "onAllVersions -i -Ptarget=it-jar --gradle-user-home $tmpDir"
+                runGradle 17 19 "onAllVersions -i -Ptarget=job-jar --gradle-user-home $tmpDir"
             else
-				runBasicAnt 17 19 'clean-all it-jar job-jar'
+				myEnvVariables[ANT_OPTS]="$ANT_OPTS_BASIC"
+			    setEnvVars
+				runAnt 17 19 'clean-all it-jar job-jar'
             fi
             ;;
 
-		'findbugs'|${jobNames['findbugs']})
+		# jobNames[findbugs]="$(getGB 'Findbugs')"
+		'findbugs')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
-				runBasicGradle 17 19 findbugs
+				runGradle 17 19 findbugs
             else
-				runBasicAnt 17 19 'clean-all findbugs-core findbugs-plugins'
+				myEnvVariables[ANT_OPTS]="$ANT_OPTS_BASIC"
+			    setEnvVars
+				runAnt 17 19 'clean-all findbugs-core findbugs-plugins'
             fi
             ;;
 
-		'findbugsCore'|${jobNames['findbugsCore']})
-            echoInfo "Running...$jobInQuestion"
-            if atLeastVersion 6; then
-				runBasicGradle 17 19 findbugsCore
-            else
-				runBasicAnt 17 19 'clean-all findbugs-core'
-            fi
-            ;;
-
-        'findbugsPlugins'|${jobNames['findbugsPlugins']})
-            echoInfo "Running...$jobInQuestion"
-			if atLeastVersion 6; then
-				runBasicGradle 17 19 findbugsMain
-            else
-				runBasicAnt 17 19 'clean-all findbugs-plugins'
-            fi
-            ;;
-
-        'unitTests'|${jobNames['unitTests']})
+		# jobNames[unitTests]="$(getGB 'Unit Tests')"
+        'unitTests')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6.2; then
-				runBasicGradle 17 19 test
+				runGradle 17 19 test
             else
-				runBasicAnt 17 19 "clean-all unit"
+				myEnvVariables[ANT_OPTS]="$ANT_OPTS_BASIC"
+			    setEnvVars
+				runAnt 17 19 "clean-all unit"
+            fi
+            ;;
+
+		# jobNames[itTests]="$(getGB 'Integration Tests')"
+		'itTests')
+            echoInfo "Running...$jobInQuestion"
+            if atLeastVersion 6.2; then
+				die "Not yet implemented" # TODO: fill with life
+            else
+				copyEc2Properties
+				myEnvVariables[ANT_OPTS]="$ANT_OPTS_IT"
+			    setEnvVars
+				runAnt 17 19 "clean-all download-ec2-static-property it"
+            fi
+            ;;
+
+		# jobNames[itTestsLong]="$(getGB 'Long Running Integration Tests')"
+		'itTestsLong')
+            echoInfo "Running...$jobInQuestion"
+            if atLeastVersion 6.2; then
+				die "Not yet implemented" # TODO: fill with life
+            else
+				copyEc2Properties
+				myEnvVariables[ANT_OPTS]="$ANT_OPTS_IT_LONG"
+			    setEnvVars
+				runAnt 17 19 "clean-all download-ec2-static-property it-long"
+            fi
+            ;;
+
+		# jobNames[jsSpecs]="$(getGB 'Javascript Specs')"
+		'jsSpecs')
+			if [ $DRYRUN  -eq 1 ]; then
+				echoInfo "DRYRUN: Job not yet implemented"
+			else
+				die "Not yet implemented" # TODO: what to do here?
+			fi
+            ;;
+
+		# jobNames[localDB]="$(getGB 'Local Database Tests')"
+		'localDB')
+            echoInfo "Running...$jobInQuestion"
+            if atLeastVersion 6.2; then
+				die "Not yet implemented" # TODO: fill with life
+            else
+				copyEc2Properties
+				myEnvVariables[ANT_OPTS]="$ANT_OPTS_CLUSTER_EC2"
+				setEnvVars
+				runAnt 17 19 "clean-all it-db-netezza"
+            fi
+            ;;
+
+		# jobNames[remoteDB]="$(getGB 'Remote Database Tests')"
+		'remoteDB')
+            echoInfo "Running...$jobInQuestion"
+            if atLeastVersion 6.2; then
+				die "Not yet implemented" # TODO: fill with life
+            else
+				copyEc2Properties
+				myEnvVariables[ANT_OPTS]="$ANT_OPTS_CLUSTER_EC2"
+			    setEnvVars
+				runAnt 17 19 "clean-all download-ec2-static-property it-external-resources-managed"
+            fi
+            ;;
+
+		# jobNames[clusterTests]="$(getGB 'Cluster Tests')"
+		'embeddedCluster')
+            echoInfo "Running...$jobInQuestion"
+            if atLeastVersion 6.2; then
+				die "Not yet implemented" # TODO: fill with life
+            else
+				copyEc2Properties
+				myEnvVariables[ANT_OPTS]="$ANT_OPTS_CLUSTER_EC2"
+			    setEnvVars
+				runAnt 17 19 "clean-all download-ec2-static-property it"
+            fi
+            ;;
+
+		# jobNames[efwLocal]="$(getGB 'EFW Local')"
+		'efwLocal')
+            echoInfo "Running...$jobInQuestion"
+            if atLeastVersion 6.2; then
+				runGradle 17 19 test
+            else
+				copyEc2Properties
+				myEnvVariables[ANT_OPTS]="$ANT_OPTS_CLUSTER_EFW_LOCAL"
+			    setEnvVars
+				runAnt 17 19 "clean-all download-ec2-static-property it"
+            fi
+            ;;
+
+		# jobNames[efwSmallJob]="$(getGB 'EFW Small Job')"
+		'efwSmallJob')
+            echoInfo "Running...$jobInQuestion"
+            if atLeastVersion 6.2; then
+				runGradle 17 19 test
+            else
+				copyEc2Properties
+				myEnvVariables[ANT_OPTS]="$ANT_OPTS_CLUSTER_EFW_SMALL"
+			    setEnvVars
+				runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
+            fi
+            ;;
+
+		# jobNames[efwSmart]="$(getGB 'EFW Smart')"
+		'efwSmart')
+            echoInfo "Running...$jobInQuestion"
+            if atLeastVersion 6.2; then
+				runGradle 17 19 test
+            else
+				copyEc2Properties
+				myEnvVariables[ANT_OPTS]="$ANT_OPTS_CLUSTER_EFW_SMART"
+			    setEnvVars
+				runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
+            fi
+            ;;
+
+		# jobNames[efwSparkClient]="$(getGB 'EFW Spark Client')"
+		'efwSparkClient')
+            echoInfo "Running...$jobInQuestion"
+            if atLeastVersion 6.2; then
+				runGradle 17 19 test
+            else
+				copyEc2Properties
+				myEnvVariables[ANT_OPTS]="$ANT_OPTS_CLUSTER_EFW_SPARK_CLIENT"
+			    setEnvVars
+				runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
+            fi
+            ;;
+
+		# jobNames[efwSparkCluster]="$(getGB 'EFW Spark Cluster')"
+		'efwSparkCluster')
+            echoInfo "Running...$jobInQuestion"
+            if atLeastVersion 6.2; then
+				runGradle 17 19 test
+            else
+				copyEc2Properties
+				myEnvVariables[ANT_OPTS]="$ANT_OPTS_CLUSTER_EFW_SPARK_CLUSTER"
+			    setEnvVars
+				runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
+            fi
+            ;;
+
+		# jobNames[efwSparkSX]="$(getGB 'EFW Spark SX')"
+		'efwSparkSX')
+            echoInfo "Running...$jobInQuestion"
+            if atLeastVersion 6.2; then
+				runGradle 17 19 test
+            else
+				copyEc2Properties
+				myEnvVariables[ANT_OPTS]="$ANT_OPTS_CLUSTER_EFW_SPARK_SX"
+			    setEnvVars
+				runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
+            fi
+            ;;
+
+		# jobNames[efwTez]="$(getGB 'EFW Tez')"
+		'efwTez')
+            echoInfo "Running...$jobInQuestion"
+            if atLeastVersion 6.2; then
+				runGradle 17 19 test
+            else
+				copyEc2Properties
+				myEnvVariables[ANT_OPTS]="$ANT_OPTS_CLUSTER_EFW_TEZ"
+			    setEnvVars
+				runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
+            fi
+            ;;
+
+		# jobNames[findbugs18]="$(getGB 'Findbugs (JDK-1.8)')"
+		'findbugs18')
+            echoInfo "Running...$jobInQuestion"
+            if atLeastVersion 6.2; then
+				runGradle 18 19 findbugs
+            else
+				myEnvVariables[ANT_OPTS]="$ANT_OPTS_BASIC"
+			    setEnvVars
+				runAnt 18 19 "clean-all findbugs-core findbugs-plugins"
+            fi
+            ;;
+
+		# jobNames[unitTests18]="$(getGB 'Unit Tests (JDK-1.8)')"
+		'unitTests18')
+            echoInfo "Running...$jobInQuestion"
+            if atLeastVersion 6.2; then
+				runGradle 18 19 test
+            else
+				myEnvVariables[ANT_OPTS]="$ANT_OPTS_BASIC"
+			    setEnvVars
+				runAnt 18 19 "clean-all unit"
+            fi
+            ;;
+
+		# jobNames[itTests18]="$(getGB 'Integration Tests (JDK-1.8)')"
+		'itTests18')
+            echoInfo "Running...$jobInQuestion"
+            if atLeastVersion 6.2; then
+				runGradle 18 19 it
+            else
+				copyEc2Properties
+				myEnvVariables[ANT_OPTS]="$ANT_OPTS_IT"
+			    setEnvVars
+				runAnt 18 19 "clean-all download-ec2-static-property it"
             fi
             ;;
 
@@ -319,9 +519,44 @@ runJob() {
     esac
 }
 
+setDryRun() { DRYRUN=1; }
+setVerbose() { VERBOSE=1; }
+
 ###############################################
 # Program
 ###############################################
+# Options parsing
+while getopts “:hvdlLj:” OPTION
+do
+     case $OPTION in
+    h)
+        usage
+        exit
+        ;;
+    d)
+        setDryRun
+        ;;
+    j)
+        JOB_ARG=$OPTARG
+        ;;
+	l)
+        listJobs
+		exit 0
+        ;;
+	L)
+        listJobsAndDryRun
+		exit 0
+        ;;
+    v)
+        setVerbose
+        ;;
+    ?)
+        die "Unrecognised option."
+        ;;
+    esac
+done
+
+
 # atLeastVersion 6 && echo "6 yes" || echo "6 no"
 # atLeastVersion 6.2 && echo "6.2 yes" || echo "6.2 no"
 # atLeastVersion 6.11 && echo "6.11 yes" || echo "6.11 no"
