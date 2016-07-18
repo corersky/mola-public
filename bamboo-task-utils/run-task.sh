@@ -278,7 +278,7 @@ getAntOptsEfw() {
 
 getAntOptPlanName() {
     if onBamboo; then
-        echo "-Dplan.name=${bamboo_buildResultKey}-${bamboo_repository_branch.name}"
+        echo "-Dplan.name=${bamboo_buildResultKey}-${bamboo_repository_branch_name}"
     else
         echo "-Dplan.name=${bamboo_buildResultKey:-dummyKey}-${bamboo_repository_branch_name:-dummyBranch}"
     fi
