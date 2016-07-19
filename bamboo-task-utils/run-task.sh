@@ -245,7 +245,7 @@ notImpemented() {
 }
 
 getAntOptsBasic() {
-	local ANT_OPTS
+	local ANT_OPTS=''
 	ANT_OPTS="$ANT_OPTS -Dhalt.on.failure=false -DshowOutput=false"
 	ANT_OPTS="$ANT_OPTS -Xmx${1:-512}m -XX:MaxPermSize=256m"
 	echo "$ANT_OPTS"
@@ -259,7 +259,7 @@ getAntOptsBasicWithPlanName() {
 }
 
 getAntOptsEfwLocal() {
-	local ANT_OPTS
+	local ANT_OPTS=''
 	ANT_OPTS="$ANT_OPTS -Dhalt.on.failure=false -DshowOutput=false"
 	ANT_OPTS="$ANT_OPTS -Xmx2048m"
 	ANT_OPTS="$ANT_OPTS -Dtest.groups=${2:-execution_framework}"
@@ -268,8 +268,8 @@ getAntOptsEfwLocal() {
 }
 
 getAntOptsEfw() {
-	local ANT_OPTS
-	ANT_OPTS="$(getAntOptsEfw $*)"
+	local ANT_OPTS=''
+	ANT_OPTS="$(getAntOptsEfwLocal $*)"
 	ANT_OPTS="$ANT_OPTS -Dhadoop.dist=cdh-5.4.2-mr2"
 	ANT_OPTS="$ANT_OPTS -Dtest.cluster=ec2"
 	ANT_OPTS="$ANT_OPTS $(getAntOptPlanName)"
@@ -294,7 +294,7 @@ runJob() {
     echo "Looking for '$jobInQuestion',  with shortName '$shortName'"
 
 	local -A myEnvVariables # fresh set of envVars to fill on a per job basis
-	local ANT_OPTS
+	local ANT_OPTS=''
     case "$shortName" in
 
         # jobNames[compile]="$(getGB 'Compile Datameer Distributions')"
@@ -316,7 +316,7 @@ runJob() {
         'findbugs')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
-                runGradle 17 19 findbugs
+                runGradle 17 19 'findbugsMain'
             else
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
 				setEnvVars
@@ -328,7 +328,7 @@ runJob() {
         'unitTests')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6.2; then
-                runGradle 17 19 test
+                runGradle 17 19 'test'
             else
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
 				setEnvVars
