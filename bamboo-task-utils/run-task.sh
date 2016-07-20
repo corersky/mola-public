@@ -318,9 +318,9 @@ runJob() {
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
                 gradleTmpDir=$GRADLE_TMP_BASE/${bamboo_buildKey:-local-run}
-                exec mkdir -pv $tmpDir
-                runGradle 17 19 "onAllVersions -i -Ptarget=it-jar --gradle-user-home $tmpDir"
-                runGradle 17 19 "onAllVersions -i -Ptarget=job-jar --gradle-user-home $tmpDir"
+                exec mkdir -pv $gradleTmpDir
+                runGradle 17 19 "onAllVersions -i -Ptarget=it-jar --gradle-user-home $gradleTmpDir"
+                runGradle 17 19 "onAllVersions -i -Ptarget=job-jar --gradle-user-home $gradleTmpDir"
             else
                 myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
 				setEnvVars
