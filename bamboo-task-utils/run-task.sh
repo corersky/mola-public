@@ -713,7 +713,7 @@ runJob() {
 
     # If we got this far without an exiting with an error, check for unit-test files.
     # If there are none, add a dummy.
-    exec addDummyUnitTestXmlIfNeeded
+    addDummyUnitTestXmlIfNeeded
 }
 
 addDummyUnitTestXmlIfNeeded() {
