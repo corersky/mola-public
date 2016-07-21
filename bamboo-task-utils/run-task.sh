@@ -755,9 +755,9 @@ function addDummyUnitTestXmlIfNeeded() {
     local itTestFiles="$(find . -name it-reports -type d | xargs -I{} find {} -name "TEST-*.xml" -type f)"
     local itTestFilesGradle="$(find . -name test-results -type d | xargs -I{} find {} -name "TEST-*.xml" -type f)"
     cd "$myDir"
-    mkdir -pv modules/dap-common/build/reports/it-reports
     if [ -z "$jsSpecsTestFiles$unitTestFiles$itTestFiles$itTestFilesGradle" ]; then
         echoInfo "Could not find any Junit test files. Adding a dummy..."
+        mkdir -pv modules/dap-common/build/reports/it-reports
         echo '<?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
    <testsuite name="JUnitXmlReporter" errors="0" tests="1" failures="0" time="0" timestamp="2015-01-01T00:00:01">
