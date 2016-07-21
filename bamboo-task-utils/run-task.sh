@@ -75,11 +75,11 @@ VERBOSE=0
 DRYRUN=0
 
 function preTasks() {
-    printDiskUsage 'PRE-BUILD'
+    printDiskUsage 'PRE '
 }
 
 function postTasks() {
-    printDiskUsage 'POST-BUILD'
+    printDiskUsage 'POST'
     outputDiskUsageForjob
     # If we got this far without an exiting with an error, check for unit-test files.
     # If there are none, add a dummy.
