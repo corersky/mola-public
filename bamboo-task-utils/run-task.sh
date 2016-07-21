@@ -16,10 +16,11 @@ buildProperties="src/build/ant/build.properties"
 PARQUET='-Duse-parquet-storage=true'
 
 # util to get a green build name
-getGB() { echo "Datameer - Green Builds - $@ - job"; }
-getIB() { echo "Datameer - Info Builds - $@ - job"; }
-declare -A jobNames
+function getGB() { echo "Datameer - Green Builds - $@ - job"; }
+function getIB() { echo "Datameer - Info Builds - $@ - job"; }
 
+# jobNames
+declare -A jobNames
 # Green Builds
 jobNames[compile]="$(getGB 'Compile Datameer Distributions')"
 jobNames[findbugs]="$(getGB 'Findbugs')"
@@ -40,7 +41,6 @@ jobNames[unitTests18]="$(getGB 'Unit Tests (JDK-1.8)')"
 jobNames[itTests18]="$(getGB 'Integration Tests (JDK-1.8)')"
 jobNames[localDB]="$(getGB 'Local Database Tests')"
 jobNames[remoteDB]="$(getGB 'Remote Database Tests')"
-
 # Info Builds
 jobNames[efwSparkClientFull]="$(getIB 'EFW Spark Client (full)')"
 jobNames[efwSparkClusterFull]="$(getIB 'EFW Spark Cluster (full)')"
@@ -52,7 +52,7 @@ jobNames[psfItTests]="$(getGB 'Parquet Integration Tests')"
 jobNames[psfItTestsLong]="$(getGB 'Parquet Long Running Integration Tests')"
 jobNames[psfEmbeddedCluster]="$(getGB 'Parquet Embedded Cluster')"
 
-usage()
+function usage()
 {
 cat << EOF
 usage: $0 [OPTIONS]
@@ -73,35 +73,55 @@ EOF
 VERBOSE=0
 DRYRUN=0
 
-die() {
+function preTasks() {
+    printDiskUsage 'PRE-BUILD'
+}
+
+function postTasks() {
+    printDiskUsage 'POST-BUILD'
+    # If we got this far without an exiting with an error, check for unit-test files.
+    # If there are none, add a dummy.
+    addDummyUnitTestXmlIfNeeded
+}
+
+function printDiskUsage() {
+    echoInfo "$1 Disk usage - general:"
+    df -h
+    echoInfo "$1 Disk usage - HOME:"
+    du -s $HOME/.[!.]* $HOME/* | sort -n -k 1
+    echoInfo "$1 Disk usage - TMP:"
+    du -s /tmp/.[!.]* /tmp/* | sort -n -k 1
+}
+
+function die() {
     (>&2 echo -e "RUN-TASK - ERROR: $@")
     exit 1
 }
 
-echoInfo() {
+function echoInfo() {
     echo -e "RUN-TASK - INFO:  $@"
 }
 
-echoDebug() {
+function echoDebug() {
     if [ $VERBOSE -eq 1 ]; then
         echo -e "RUN-TASK - DEBUG: $@"
     fi
 }
 
-copyEc2Properties() {
+function copyEc2Properties() {
     if [ -e "$BAMBOO_EC2_PROPS" ]; then
         exec cp "$BAMBOO_EC2_PROPS" "$bamboo_build_working_directory/modules/dap-common/src/it/resources/ec2.properties"
     fi
 }
 
-listJobs() {
+function listJobs() {
     printf "%-25s   %s\n" "SHORTNAME" "LONGNAME"
     for i in "${!jobNames[@]}"; do
         printf "%-25s   %s\n" "$i" "${jobNames[$i]}"
     done
 }
 
-listJobsAndDryRun() {
+function listJobsAndDryRun() {
     printf "%-25s   %s\n" "SHORTNAME" "LONGNAME"
     for i in "${!jobNames[@]}"; do
         printf "%-25s   %s\n" "$i" "${jobNames[$i]}"
@@ -110,7 +130,7 @@ listJobsAndDryRun() {
     done
 }
 
-atLeastVersion() {
+function atLeastVersion() {
     local atLeastRaw=$1
     local atLeast=$(echo $atLeastRaw | sed 's/\(\.0\)*$//')
     echoDebug "At least version: '$atLeast' (normalised from $atLeastRaw)"
@@ -123,7 +143,7 @@ atLeastVersion() {
     [ "$latestVersion" == "$version" ]
 }
 
-checkJdk() {
+function checkJdk() {
     local version execProgram expectedVersion
     expectedVersion=$1 || die "No expectedVersion parameter passed."
     execProgram=$(which java || die "No java found on PATH")
@@ -144,7 +164,7 @@ checkJdk() {
      fi
 }
 
-checkAnt() {
+function checkAnt() {
     local version execProgram expectedVersion
     expectedVersion=$1 || die "No expectedVersion parameter passed."
     execProgram=$(which ant || die "No ant found on PATH")
@@ -165,11 +185,11 @@ checkAnt() {
      fi
 }
 
-onBamboo() {
+function onBamboo() {
     [[ "$USER" == "bamboo" ]]
 }
 
-setJdk() {
+function setJdk() {
     if onBamboo; then
         local jdkDir
         case "$1" in
@@ -186,7 +206,7 @@ setJdk() {
     checkJdk $1
 }
 
-setAnt() {
+function setAnt() {
     if onBamboo; then
         local antDir
         case "$1" in
@@ -203,7 +223,7 @@ setAnt() {
     checkAnt $1
 }
 
-setEnvVars() {
+function setEnvVars() {
     for i in "${!myEnvVariables[@]}"
     do
         echoInfo "Exporting... $i=${myEnvVariables[$i]}"
@@ -211,7 +231,7 @@ setEnvVars() {
     done
 }
 
-exec() {
+function exec() {
     if [ $DRYRUN  -eq 1 ]; then
         echoInfo "DRYRUN: $@"
         return 0
@@ -220,7 +240,7 @@ exec() {
 }
 
 # environment variables need to be set before
-runAnt() {
+function runAnt() {
     local jdkVersion=$1
     local antVersion=$2
     local target=$3
@@ -232,7 +252,7 @@ runAnt() {
 }
 
 # environment variables need to be set before
-runGradle() {
+function runGradle() {
     [ -x $GRADLE_WRAPPER ] || die "File '$GRADLE_WRAPPER' either non-existent or not executable."
     local jdkVersion=$1
     local antVersion=$2
@@ -244,7 +264,7 @@ runGradle() {
     exec $cmd
 }
 
-getKey() {
+function getKey() {
     for i in "${!jobNames[@]}"; do
         if [ "$1" == "$i" ] || [ "$1" == "${jobNames[$i]}" ] ; then
               echo "$i"
@@ -252,7 +272,7 @@ getKey() {
     done
 }
 
-notImpemented() {
+function notImpemented() {
 	if [ $DRYRUN  -eq 1 ]; then
 		echoInfo "DRYRUN: Job not yet implemented"
 	else
@@ -260,21 +280,21 @@ notImpemented() {
 	fi
 }
 
-getAntOptsBasic() {
+function getAntOptsBasic() {
 	local ANT_OPTS=''
 	ANT_OPTS="$ANT_OPTS -Dhalt.on.failure=false -DshowOutput=false"
 	ANT_OPTS="$ANT_OPTS -Xmx${1:-512}m -XX:MaxPermSize=256m"
 	echo "$ANT_OPTS"
 }
 
-getAntOptsBasicWithPlanName() {
+function getAntOptsBasicWithPlanName() {
 	local ANT_OPTS
 	ANT_OPTS="$(getAntOptsBasic $*)"
 	ANT_OPTS="$ANT_OPTS $(getAntOptPlanName)"
 	echo "$ANT_OPTS"
 }
 
-getAntOptsEfwLocal() {
+function getAntOptsEfwLocal() {
 	local ANT_OPTS=''
 	ANT_OPTS="$ANT_OPTS -Dhalt.on.failure=false -DshowOutput=false"
 	ANT_OPTS="$ANT_OPTS -Xmx2048m"
@@ -283,7 +303,7 @@ getAntOptsEfwLocal() {
 	echo "$ANT_OPTS"
 }
 
-getAntOptsEfw() {
+function getAntOptsEfw() {
 	local ANT_OPTS=''
 	ANT_OPTS="$(getAntOptsEfwLocal $*)"
 	ANT_OPTS="$ANT_OPTS -Dhadoop.dist=cdh-5.4.2-mr2"
@@ -292,7 +312,7 @@ getAntOptsEfw() {
 	echo "$ANT_OPTS"
 }
 
-getAntOptPlanName() {
+function getAntOptPlanName() {
     if onBamboo; then
         echo "-Dplan.name=${bamboo_buildResultKey}-${bamboo_repository_branch_name}"
     else
@@ -300,7 +320,7 @@ getAntOptPlanName() {
     fi
 }
 
-runJob() {
+function runJob() {
     # TODO: why 1024m for some jobs and only 512m for others?
 
     local jobInQuestion="${1:-${bamboo_buildPlanName:-}}"
@@ -710,13 +730,9 @@ runJob() {
             die "Job with name '$jobInQuestion' not found/supported."
             ;;
     esac
-
-    # If we got this far without an exiting with an error, check for unit-test files.
-    # If there are none, add a dummy.
-    addDummyUnitTestXmlIfNeeded
 }
 
-addDummyUnitTestXmlIfNeeded() {
+function addDummyUnitTestXmlIfNeeded() {
     local jsSpecsTestFiles="$(find . -name ui-specs-results -type d | xargs -I{} find {} -name "*-results.xml" -type f)"
     local unitTestFiles="$(find . -name unit-reports -type d | xargs -I{} find {} -name "TEST-*.xml" -type f)"
     local itTestFiles="$(find . -name it-reports -type d | xargs -I{} find {} -name "TEST-*.xml" -type f)"
@@ -744,21 +760,24 @@ addDummyUnitTestXmlIfNeeded() {
     fi
 
 }
-setDryRun() { DRYRUN=1; }
-setVerbose() { VERBOSE=1; }
 
+function setDryRun() { DRYRUN=1; }
+
+function setVerbose() { VERBOSE=1; }
 
 function finish {
-    echoInfo "In cleanup function."
+    echoInfo "In 'finish' function, triggered on signal EXIT."
     # cleanup gradle temp directory if created.
+    echoInfo "Cleaning up grade temp directory if present..."
     [[ "${gradleTmpDir:-}" == $GRADLE_TMP_BASE/* ]] && rm -rf "$gradleTmpDir"
+    [ $? -eq 0 ] && echo "Done!"
 }
-trap finish EXIT
 
 ###############################################
 # Program
 ###############################################
 myDir="$(pwd)"
+trap finish EXIT
 # Options parsing
 while getopts “:hvdlLj:” OPTION
 do
@@ -796,6 +815,8 @@ done
 # atLeastVersion 6.11 && echo "6.11 yes" || echo "6.11 no"
 # atLeastVersion 6.2.0 && echo "6.2.0 yes" || echo "6.2.0 no"
 # atLeastVersion 6.1.9 && echo "6.1.9 yes" || echo "6.1.9 no"
+
+preTasks
 runJob "${JOB_ARG:-}"
-[ $? -eq 0 ] && echo "Done!"
+postTasks
 
