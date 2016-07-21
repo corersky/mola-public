@@ -7,6 +7,7 @@ IFS=$'\n\t'
 ####################################################
 # Defaults
 ####################################################
+DU_LOG="/var/tmp/du.log"
 BAMBOO_EC2_PROPS='/home/bamboo/.ec2/ec2.properties'
 BAMBOO_JDK_8_STRING='JDK-1.8'
 BAMBOO_JDK_DEFAULT='JDK-1.7'
@@ -79,18 +80,34 @@ function preTasks() {
 
 function postTasks() {
     printDiskUsage 'POST-BUILD'
+    outputDiskUsageForjob
     # If we got this far without an exiting with an error, check for unit-test files.
     # If there are none, add a dummy.
     addDummyUnitTestXmlIfNeeded
 }
 
+function outputDiskUsageForjob() {
+    if [ -f "$DU_LOG" ]; then
+        echoInfo "Disk usage from job below: "
+        grep "${bamboo_agentId} ${bamboo_buildResultKey}" $DU_LOG
+    fi
+}
+
 function printDiskUsage() {
-    echoInfo "$1 Disk usage - general:"
-    df -h
-    echoInfo "$1 Disk usage - HOME:"
-    du -s $HOME/.[!.]* $HOME/* | sort -n -k 1
-    echoInfo "$1 Disk usage - TMP:"
-    du -s /tmp/.[!.]* /tmp/* | sort -n -k 1
+    if onBamboo; then
+        local dt=$(date '+%D %T')
+        local prefix=$(printf "%s " "$dt $1"; printf "%*s" -50 "${bamboo_agentId} ${bamboo_buildResultKey}")
+        while read line
+        do
+            fields=`echo $line | awk '{print NF}'`
+            case $fields in
+            5) echo -n "$prefix " >> $DU_LOG
+                echo "$line" >> $DU_LOG;;
+            6) echo -n "$prefix " >> $DU_LOG
+                echo "$line"  >> $DU_LOG;;
+            esac
+        done < <(df -h)
+    fi
 }
 
 function die() {
