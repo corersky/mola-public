@@ -4,6 +4,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 gitRepoReferenceBase='/home/bamboo/.temp-git-repo-reference'
+buildSubString="xml-data/build-dir"
 
 logInfo() {
 	echo "LOG-INFO: $@"
@@ -34,7 +35,6 @@ setupGitRepositoryReference() {
 
 if [ -n "$bamboo_build_working_directory" ]; then
 	# sanity check - make sure we are deleting the right thing
-	buildSubString="bamboo-home/xml-data/build-dir"
 	[[ "$bamboo_build_working_directory" == *"$buildSubString"* ]] || die "Working directory '$bamboo_build_working_directory' does not contain sub-string '$buildSubString' "
 	# pre-checkout cleaning...
 	#logInfo "Listing bamboo_build_working_directory BEFORE..."
