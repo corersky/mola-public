@@ -241,6 +241,10 @@ function setAnt() {
 }
 
 function setEnvVars() {
+    # need to add this to workaround https://issues.gradle.org/browse/GRADLE-2795
+    if onBamboo; then
+        myEnvVariables[GRADLE_USER_HOME]="$HOME/.gradle_for_agent_$bamboo_agentId"
+    fi
     for i in "${!myEnvVariables[@]}"
     do
         echoInfo "Exporting... $i=${myEnvVariables[$i]}"
