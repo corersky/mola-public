@@ -732,6 +732,7 @@ function runJob() {
             die "Job with name '$jobInQuestion' not found/supported."
             ;;
     esac
+    echoInfo "Finished...'$jobInQuestion'"
 }
 
 function addDummyUnitTestXmlIfNeeded() {
