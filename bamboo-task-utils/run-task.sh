@@ -769,7 +769,7 @@ function finish {
     echoInfo "In 'finish' function, triggered on signal EXIT."
     # cleanup gradle temp directory if created.
     echoInfo "Cleaning up grade temp directory if present..."
-    [[ "${gradleTmpDir:-}" == $GRADLE_TMP_BASE/* ]] && rm -rf "$gradleTmpDir"
+    [[ "${gradleTmpDir:-}" == $GRADLE_TMP_BASE/* ]] && rm -rf "$gradleTmpDir" ]] || true
     [ $? -eq 0 ] && echo "Done!"
 }
 
