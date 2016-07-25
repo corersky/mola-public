@@ -370,8 +370,8 @@ function runJob() {
         'compile')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
-                runGradle 17 19 "onAllVersions -i -Ptarget=it-jar
-                runGradle 17 19 "onAllVersions -i -Ptarget=job-jar
+                runGradle 17 19 "onAllVersions -i -Ptarget=it-jar"
+                runGradle 17 19 "onAllVersions -i -Ptarget=job-jar"
             else
                 myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
                 runAnt 17 19 'clean-all it-jar job-jar'
@@ -383,6 +383,7 @@ function runJob() {
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
                 runGradle 17 19 'findbugsMain'
+                echoInfo "Exit code: $?"
             else
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
                 runAnt 17 19 'clean-all findbugs-core findbugs-plugins'
