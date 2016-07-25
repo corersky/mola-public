@@ -355,6 +355,7 @@ function getAntOptPlanName() {
 }
 
 function runJob() {
+    preTasks
     # TODO: why 1024m for some jobs and only 512m for others?
 
     local jobInQuestion="${1:-${bamboo_buildPlanName:-}}"
@@ -738,6 +739,7 @@ function runJob() {
             ;;
     esac
     echoInfo "Finished...'$jobInQuestion'"
+    postTasks
 }
 
 function addDummyUnitTestXmlIfNeeded() {
@@ -774,7 +776,6 @@ function setDryRun() { DRYRUN=1; }
 function setVerbose() { VERBOSE=1; }
 
 function finish() {
-    postTasks
     echoInfo "In 'finish' function, triggered on signal EXIT."
     # cleanup gradle temp directory if created.
     echoInfo "Cleaning up grade temp directory if present..."
@@ -825,7 +826,4 @@ done
 # atLeastVersion 6.2.0 && echo "6.2.0 yes" || echo "6.2.0 no"
 # atLeastVersion 6.1.9 && echo "6.1.9 yes" || echo "6.1.9 no"
 
-preTasks
 runJob "${JOB_ARG:-}"
-# postTasks moved to finish because of strange activity with
-# https://build.datameer.com/browse/DGB-FIN-JOB1-10
