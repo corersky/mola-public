@@ -428,6 +428,9 @@ function runJob() {
         'jsSpecs')
 			echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
+                myEnvVariables[CHROME_BIN]="/opt/google/chrome/google-chrome"
+                myEnvVariables[FIREFOX_BIN]="/opt/firefox_30.0_js/firefox"
+                myEnvVariables[DISPLAY]="localhost:0.0"
                 exec cd modules/dap-conductor
                 runNpm 'test'
             else
