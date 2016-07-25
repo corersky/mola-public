@@ -15,6 +15,7 @@ GRADLE_WRAPPER='./gradlew'
 GRADLE_TMP_BASE='/tmp/gradlehome'
 buildProperties="src/build/ant/build.properties"
 PARQUET='-Duse-parquet-storage=true'
+declare -A myEnvVariables # fresh set of envVars to fill on a per job basis
 
 # util to get a green build name
 function getGB() { echo "Datameer - Green Builds - $@ - job"; }
@@ -361,7 +362,6 @@ function runJob() {
     [ -n "$shortName" ] || die "Could not find '$jobInQuestion' in job list. Check the supported job list."
     echo "Looking for '$jobInQuestion',  with shortName '$shortName'"
 
-	local -A myEnvVariables # fresh set of envVars to fill on a per job basis
 	local ANT_OPTS=''
     case "$shortName" in
 
@@ -768,7 +768,7 @@ function setDryRun() { DRYRUN=1; }
 
 function setVerbose() { VERBOSE=1; }
 
-function finish {
+function finish() {
     echoInfo "In 'finish' function, triggered on signal EXIT."
     # cleanup gradle temp directory if created.
     echoInfo "Cleaning up grade temp directory if present..."
