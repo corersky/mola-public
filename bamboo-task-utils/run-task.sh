@@ -292,7 +292,8 @@ function runNpm() {
     local target=$1
     setEnvVars
     cmd="npm $target"
-    echoInfo "Running... $cmd"
+    echoInfo "Running... $cmd from $(pwd)"
+    echoInfo "In directory... $(pwd)"
     exec $cmd
 }
 
