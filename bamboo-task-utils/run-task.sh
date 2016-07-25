@@ -774,6 +774,7 @@ function setDryRun() { DRYRUN=1; }
 function setVerbose() { VERBOSE=1; }
 
 function finish() {
+    postTasks
     echoInfo "In 'finish' function, triggered on signal EXIT."
     # cleanup gradle temp directory if created.
     echoInfo "Cleaning up grade temp directory if present..."
@@ -826,5 +827,5 @@ done
 
 preTasks
 runJob "${JOB_ARG:-}"
-postTasks
-
+# postTasks moved to finish because of strange activity with
+# https://build.datameer.com/browse/DGB-FIN-JOB1-10
