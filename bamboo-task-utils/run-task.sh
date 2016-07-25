@@ -141,7 +141,7 @@ function listJobs() {
 function listJobsAndDryRun() {
     printf "%-25s   %s\n" "SHORTNAME" "LONGNAME"
     for i in "${!jobNames[@]}"; do
-        printf "%-25s   %s\n" "$i" "${jobNames[$i]}"
+        printf "########### %-25s   %s\n" "$i" "${jobNames[$i]}"
         setDryRun && setVerbose
         runJob $i
     done
@@ -260,11 +260,11 @@ function exec() {
     eval "$@"
 }
 
-# environment variables need to be set before
 function runAnt() {
     local jdkVersion=$1
     local antVersion=$2
     local target=$3
+    setEnvVars
     setJdk $jdkVersion
     setAnt $antVersion
     cmd="ant $target"
@@ -272,18 +272,27 @@ function runAnt() {
     exec $cmd
 }
 
-# environment variables need to be set before
 function runGradle() {
     [ -x $GRADLE_WRAPPER ] || die "File '$GRADLE_WRAPPER' either non-existent or not executable."
     local jdkVersion=$1
     local antVersion=$2
     local target=$3
+    setEnvVars
     setJdk $jdkVersion
     setAnt $antVersion
     cmd="$GRADLE_WRAPPER $target"
     echoInfo "Running... $cmd"
     exec $cmd
 }
+
+function runNpm() {
+    local target=$1
+    setEnvVars
+    cmd="npm $target"
+    echoInfo "Running... $cmd"
+    exec $cmd
+}
+
 
 function getKey() {
     for i in "${!jobNames[@]}"; do
@@ -358,13 +367,10 @@ function runJob() {
         'compile')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
-                gradleTmpDir=$GRADLE_TMP_BASE/${bamboo_buildKey:-local-run}
-                exec mkdir -pv $gradleTmpDir
-                runGradle 17 19 "onAllVersions -i -Ptarget=it-jar --gradle-user-home $gradleTmpDir"
-                runGradle 17 19 "onAllVersions -i -Ptarget=job-jar --gradle-user-home $gradleTmpDir"
+                runGradle 17 19 "onAllVersions -i -Ptarget=it-jar
+                runGradle 17 19 "onAllVersions -i -Ptarget=job-jar
             else
                 myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
-				setEnvVars
                 runAnt 17 19 'clean-all it-jar job-jar'
             fi
             ;;
@@ -376,7 +382,6 @@ function runJob() {
                 runGradle 17 19 'findbugsMain'
             else
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
-				setEnvVars
                 runAnt 17 19 'clean-all findbugs-core findbugs-plugins'
             fi
             ;;
@@ -388,7 +393,6 @@ function runJob() {
                 runGradle 17 19 'test'
             else
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
-				setEnvVars
                 runAnt 17 19 "clean-all unit"
             fi
             ;;
@@ -401,7 +405,6 @@ function runJob() {
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic 1024)"
-				setEnvVars
                 runAnt 17 19 "clean-all download-ec2-static-property it"
             fi
             ;;
@@ -414,7 +417,6 @@ function runJob() {
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
-				setEnvVars
                 runAnt 17 19 "clean-all download-ec2-static-property it-long"
             fi
             ;;
@@ -424,11 +426,10 @@ function runJob() {
 			echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
                 exec cd modules/dap-conductor
-                exec npm test
+                runNpm 'test'
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
-                setEnvVars
                 runAnt 17 19 "clean-all specs"
             fi
             ;;
@@ -441,7 +442,6 @@ function runJob() {
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasicWithPlanName 1024)"
-                setEnvVars
                 runAnt 17 19 "clean-all it-db-netezza"
             fi
             ;;
@@ -454,7 +454,6 @@ function runJob() {
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasicWithPlanName 1024)"
-                setEnvVars
                 runAnt 17 19 "clean-all download-ec2-static-property it-external-resources-managed"
             fi
             ;;
@@ -469,7 +468,6 @@ function runJob() {
 				ANT_OPTS="$(getAntOptsBasic 1024)"
 				ANT_OPTS="$ANT_OPTS -Dtest.groups=cluster"
 				myEnvVariables[ANT_OPTS]="$ANT_OPTS"
-                setEnvVars
                 runAnt 17 19 "clean-all download-ec2-static-property it"
             fi
             ;;
@@ -482,7 +480,6 @@ function runJob() {
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsEfwLocal Local)"
-                setEnvVars
                 runAnt 17 19 "clean-all download-ec2-static-property it"
             fi
             ;;
@@ -495,7 +492,6 @@ function runJob() {
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsEfw SmallJob)"
-                setEnvVars
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
             ;;
@@ -508,7 +504,6 @@ function runJob() {
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]=$(getAntOptsEfw Smart)
-                setEnvVars
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
             ;;
@@ -521,7 +516,6 @@ function runJob() {
             else
                 copyEc2Properties
 				ANT_OPTS=$(getAntOptsEfw SparkClient)
-                setEnvVars
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
             ;;
@@ -534,7 +528,6 @@ function runJob() {
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]=$(getAntOptsEfw SparkCluster)
-                setEnvVars
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
             ;;
@@ -547,7 +540,6 @@ function runJob() {
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]=$(getAntOptsEfw SparkSX)
-                setEnvVars
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
             ;;
@@ -560,7 +552,6 @@ function runJob() {
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]=$(getAntOptsEfw Tez dist_sanity)
-                setEnvVars
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
             ;;
@@ -572,7 +563,6 @@ function runJob() {
                 runGradle 18 19 findbugsMain
             else
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
-                setEnvVars
                 runAnt 18 19 "clean-all findbugs-core findbugs-plugins"
             fi
             ;;
@@ -584,7 +574,6 @@ function runJob() {
                 runGradle 18 19 test
             else
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
-                setEnvVars
                 runAnt 18 19 "clean-all unit"
             fi
             ;;
@@ -597,7 +586,6 @@ function runJob() {
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic 1024)"
-                setEnvVars
                 runAnt 18 19 "clean-all download-ec2-static-property it"
             fi
             ;;
@@ -612,7 +600,6 @@ function runJob() {
 				ANT_OPTS="$(getAntOptsEfw SparkClient cluster,dist_sanity)"
 				ANT_OPTS="$ANT_OPTS -DinstanceType=m3.large"
 				myEnvVariables[ANT_OPTS]="$ANT_OPTS"
-                setEnvVars
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
             ;;
@@ -628,7 +615,6 @@ function runJob() {
 				ANT_OPTS="$ANT_OPTS -DinstanceType=m3.large"
 				ANT_OPTS="$ANT_OPTS -Dspark.thrift=true"
 				myEnvVariables[ANT_OPTS]="$ANT_OPTS"
-                setEnvVars
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
             ;;
@@ -643,7 +629,6 @@ function runJob() {
 				copyEc2Properties
 				ANT_OPTS="$(getAntOptsEfw Tez cluster,dist_sanity)"
 				myEnvVariables[ANT_OPTS]="$ANT_OPTS"
-                setEnvVars
                 runAnt 17 19 "clean-all download-ec2-static-property it-ec2-managed"
 				# TODO: why no unit test? (comparing to e.g. efwSparkClientFull)
             fi
@@ -657,7 +642,6 @@ function runJob() {
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic 1024)"
-                setEnvVars
                 runAnt 17 19 "clean-all download-ec2-static-property it"
             fi
             ;;
@@ -670,7 +654,6 @@ function runJob() {
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
-                setEnvVars
                 runAnt 18 19 "clean-all download-ec2-static-property it-long"
             fi
             ;;
@@ -683,7 +666,6 @@ function runJob() {
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic) $PARQUET"
-                setEnvVars
                 runAnt 17 19 "clean-all unit"
             fi
             ;;
@@ -703,7 +685,6 @@ function runJob() {
                 ANT_OPTS="$ANT_OPTS -DshowOutput=false"
                 ANT_OPTS="$ANT_OPTS -Dhalt.on.failure=false"
                 myEnvVariables[ANT_OPTS]="$ANT_OPTS"
-                setEnvVars
                 runAnt 17 19 "clean-all download-ec2-static-property it"
             fi
             ;;
@@ -723,7 +704,6 @@ function runJob() {
                 ANT_OPTS="$ANT_OPTS -DshowOutput=false"
                 ANT_OPTS="$ANT_OPTS -Dhalt.on.failure=false"
                 myEnvVariables[ANT_OPTS]="$ANT_OPTS"
-                setEnvVars
                 runAnt 17 19 "clean-all download-ec2-static-property it-long"
             fi
             ;;
@@ -742,7 +722,6 @@ function runJob() {
                 ANT_OPTS="$ANT_OPTS -Xmx768m"
                 ANT_OPTS="$ANT_OPTS -DinstanceType=m3.large"
                 myEnvVariables[ANT_OPTS]="$ANT_OPTS"
-                setEnvVars
                 runAnt 17 19 "clean-all download-ec2-static-property it"
             fi
             ;;
