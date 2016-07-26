@@ -91,8 +91,8 @@ function postTasks() {
 
 function outputDiskUsageForjob() {
     if [ -f "$DU_LOG" ]; then
-        echoInfo "Disk usage from job below: "
-        grep "${bamboo_agentId} ${bamboo_buildResultKey}" $DU_LOG
+        echoInfo "Disk usage from job below sorted by mount point: "
+        tail -n $tailNum $DU_LOG | sort -k 11
     fi
 }
 
@@ -100,16 +100,12 @@ function printDiskUsage() {
     if onBamboo; then
         local dt=$(date '+%D %T')
         local prefix=$(printf "%s " "$dt $1"; printf "%*s" -50 "${bamboo_agentId} ${bamboo_buildResultKey}")
-        while read line
-        do
-            fields=`echo $line | awk '{print NF}'`
-            case $fields in
-            5) echo -n "$prefix " >> $DU_LOG
-                echo "$line" >> $DU_LOG;;
-            6) echo -n "$prefix " >> $DU_LOG
-                echo "$line"  >> $DU_LOG;;
-            esac
-        done < <(df -h)
+        local dfOutput=$(df -h | sed -e 1d | sort -u -k 6) # shows only the unique filesystems and no header
+        local numOfLines=$(echo "$dfOutput" | wc -l)
+        let "tailNum=$numOfLines*10" # needed for grepping number of lines in post step
+        while read line; do
+            echo "$prefix $line" >> $DU_LOG
+        done <<< "$dfOutput"
     fi
 }
 
