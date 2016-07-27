@@ -90,9 +90,11 @@ function postTasks() {
 }
 
 function outputDiskUsageForjob() {
-    if [ -f "$DU_LOG" ]; then
-        echoInfo "Disk usage from job below sorted by mount point: "
-        tail -n $tailNum $DU_LOG | sort -k 11
+    if onBamboo; then
+        if [ -f "$DU_LOG" ]; then
+            echoInfo "Disk usage from job below sorted by mount point: "
+            tail -n $tailNum $DU_LOG | sort -k 11
+        fi
     fi
 }
 
@@ -352,9 +354,12 @@ function getAntOptPlanName() {
 
 function runJob() {
     preTasks
-    # TODO: why 1024m for some jobs and only 512m for others?
-
-    local jobInQuestion="${1:-${bamboo_buildPlanName:-}}"
+    local jobArg=$1
+    # the following two lines are necessary because, on branch runs, the bamboo_buildPlanName
+    # has the branch and job name as a suffix. These must be removed!
+    local planNameInQuestion=${bamboo_buildPlanName:-}
+    planNameInQuestion="${planNameInQuestion// - ${bamboo_repository_branch_name:-}/}"
+    local jobInQuestion="${jobArg:-$planNameInQuestion}"
     [ -z "$jobInQuestion" ] && die "Neither bamboo_buildPlanName variable nor input argument passed."
     local shortName=$(getKey "$jobInQuestion")
     [ -n "$shortName" ] || die "Could not find '$jobInQuestion' in job list. Check the supported job list."
@@ -754,7 +759,7 @@ function addDummyUnitTestXmlIfNeeded() {
    </testsuite>
 </testsuites>' > modules/dap-common/build/reports/it-reports/junit-template.xml
     else
-        echoDebug "Found following junit test files: "
+        echoInfo "Found some junit test files. No need to create a dummy."
         echoDebug "Listing: jsSpecsTestFiles"
         echoDebug "$jsSpecsTestFiles"
         echoDebug "Listing: unitTestFiles"
