@@ -54,6 +54,11 @@ jobNames[psfItTests]="$(getGB 'Parquet Integration Tests')"
 jobNames[psfItTestsLong]="$(getGB 'Parquet Long Running Integration Tests')"
 jobNames[psfEmbeddedCluster]="$(getGB 'Parquet Embedded Cluster')"
 
+# Default values
+VERBOSE=0
+DRYRUN=0
+
+
 function usage()
 {
 cat << EOF
@@ -71,22 +76,22 @@ OPTIONS:
 EOF
 }
 
-# Default values
-VERBOSE=0
-DRYRUN=0
-
 function preTasks() {
     echoInfo "In preTasks..."
-    printDiskUsage 'PRE '
+    if [ $DRYRUN  -eq 0 ]; then
+        printDiskUsage 'PRE '
+    fi
 }
 
 function postTasks() {
     echoInfo "In postTasks..."
-    printDiskUsage 'POST'
-    outputDiskUsageForjob
-    # If we got this far without an exiting with an error, check for unit-test files.
-    # If there are none, add a dummy.
-    addDummyUnitTestXmlIfNeeded
+    if [ $DRYRUN  -eq 0 ]; then
+        printDiskUsage 'POST'
+        outputDiskUsageForjob
+        # If we got this far without an exiting with an error, check for unit-test files.
+        # If there are none, add a dummy.
+        addDummyUnitTestXmlIfNeeded
+    fi
 }
 
 function outputDiskUsageForjob() {
@@ -143,7 +148,7 @@ function listJobsAndDryRun() {
     printf "%-25s   %s\n" "SHORTNAME" "LONGNAME"
     for i in "${!jobNames[@]}"; do
         printf "########### %-25s   %s\n" "$i" "${jobNames[$i]}"
-        setDryRun && setVerbose
+        setDryRun
         runJob $i
     done
 }
@@ -363,7 +368,7 @@ function runJob() {
     [ -z "$jobInQuestion" ] && die "Neither bamboo_buildPlanName variable nor input argument passed."
     local shortName=$(getKey "$jobInQuestion")
     [ -n "$shortName" ] || die "Could not find '$jobInQuestion' in job list. Check the supported job list."
-    echo "Looking for '$jobInQuestion',  with shortName '$shortName'"
+    echoInfo "Looking for '$jobInQuestion',  with shortName '$shortName'"
 
 	local ANT_OPTS=''
     case "$shortName" in
@@ -744,32 +749,33 @@ function runJob() {
 }
 
 function addDummyUnitTestXmlIfNeeded() {
-    local jsSpecsTestFiles="$(find . -name ui-specs-results -type d | xargs -I{} find {} -name "*-results.xml" -type f)"
-    local unitTestFiles="$(find . -name unit-reports -type d | xargs -I{} find {} -name "TEST-*.xml" -type f)"
-    local itTestFiles="$(find . -name it-reports -type d | xargs -I{} find {} -name "TEST-*.xml" -type f)"
-    local itTestFilesGradle="$(find . -name test-results -type d | xargs -I{} find {} -name "TEST-*.xml" -type f)"
-    cd "$myDir"
-    if [ -z "$jsSpecsTestFiles$unitTestFiles$itTestFiles$itTestFilesGradle" ]; then
-        echoInfo "Could not find any Junit test files. Adding a dummy..."
-        mkdir -pv modules/dap-common/build/reports/it-reports
-        echo '<?xml version="1.0" encoding="UTF-8"?>
+    if [ $DRYRUN  -eq 0 ]; then
+        local jsSpecsTestFiles="$(find . -name ui-specs-results -type d | xargs -I{} find {} -name "*-results.xml" -type f)"
+        local unitTestFiles="$(find . -name unit-reports -type d | xargs -I{} find {} -name "TEST-*.xml" -type f)"
+        local itTestFiles="$(find . -name it-reports -type d | xargs -I{} find {} -name "TEST-*.xml" -type f)"
+        local itTestFilesGradle="$(find . -name test-results -type d | xargs -I{} find {} -name "TEST-*.xml" -type f)"
+        cd "$myDir"
+        if [ -z "$jsSpecsTestFiles$unitTestFiles$itTestFiles$itTestFilesGradle" ]; then
+            echoInfo "Could not find any Junit test files. Adding a dummy..."
+            mkdir -pv modules/dap-common/build/reports/it-reports
+            echo '<?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
    <testsuite name="JUnitXmlReporter" errors="0" tests="1" failures="0" time="0" timestamp="2015-01-01T00:00:01">
       <testcase classname="DummyTestToFoolBambooJunitParser" name="dummyTest" time="0.000" />
    </testsuite>
 </testsuites>' > modules/dap-common/build/reports/it-reports/junit-template.xml
-    else
-        echoInfo "Found some junit test files. No need to create a dummy."
-        echoDebug "Listing: jsSpecsTestFiles"
-        echoDebug "$jsSpecsTestFiles"
-        echoDebug "Listing: unitTestFiles"
-        echoDebug "$unitTestFiles"
-        echoDebug "Listing: itTestFiles"
-        echoDebug "$itTestFiles"
-        echoDebug "Listing: itTestFilesGradle"
-        echoDebug "$itTestFilesGradle"
+        else
+            echoInfo "Found some junit test files. No need to create a dummy."
+            echoDebug "Listing: jsSpecsTestFiles"
+            echoDebug "$jsSpecsTestFiles"
+            echoDebug "Listing: unitTestFiles"
+            echoDebug "$unitTestFiles"
+            echoDebug "Listing: itTestFiles"
+            echoDebug "$itTestFiles"
+            echoDebug "Listing: itTestFilesGradle"
+            echoDebug "$itTestFilesGradle"
+        fi
     fi
-
 }
 
 function setDryRun() { DRYRUN=1; }
@@ -777,11 +783,13 @@ function setDryRun() { DRYRUN=1; }
 function setVerbose() { VERBOSE=1; }
 
 function finish() {
-    echoInfo "In 'finish' function, triggered on signal EXIT."
+    # echoInfo "In 'finish' function, triggered on signal EXIT."
     # cleanup gradle temp directory if created.
-    echoInfo "Cleaning up grade temp directory if present..."
-    [[ "${gradleTmpDir:-}" == $GRADLE_TMP_BASE/* ]] && rm -rf "$gradleTmpDir" ]] || true
-    [ $? -eq 0 ] && echo "Done!"
+    if [[ "${gradleTmpDir:-}" == $GRADLE_TMP_BASE/* ]]; then
+        echoInfo "Cleaning up gradle temp directory if present..."
+        rm -rf "$gradleTmpDir" ]] || true
+    fi
+    # [ $? -eq 0 ] && echo "Done!"
 }
 
 ###############################################
@@ -795,7 +803,7 @@ do
      case $OPTION in
     h)
         usage
-        exit
+        exit 0
         ;;
     d)
         setDryRun
