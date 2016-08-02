@@ -33,6 +33,7 @@ jobNames[jsSpecs]="$(getGB 'Javascript Specs')"
 jobNames[embeddedCluster]="$(getGB 'Embedded Cluster')"
 jobNames[efwLocal]="$(getGB 'EFW Local')"
 jobNames[efwSmallJob]="$(getGB 'EFW Small Job')"
+jobNames[efwMapReduce]="$(getGB 'EFW MapReduce')"
 jobNames[efwSmart]="$(getGB 'EFW Smart')"
 jobNames[efwSparkClient]="$(getGB 'EFW Spark Client')"
 jobNames[efwSparkCluster]="$(getGB 'EFW Spark Cluster')"
@@ -506,6 +507,18 @@ function runJob() {
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsEfw SmallJob)"
+                runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
+            fi
+            ;;
+
+        # jobNames[efwMapReduce]="$(getGB 'EFW MapReduce')"
+        'efwMapReduce')
+            echoInfo "Running...$jobInQuestion"
+            if atLeastVersion 9.2; then
+				notImpemented
+            else
+                copyEc2Properties
+				myEnvVariables[ANT_OPTS]="$(getAntOptsEfw MapReduce)"
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
             ;;
