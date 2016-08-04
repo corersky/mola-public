@@ -364,7 +364,9 @@ function runJob() {
     # the following two lines are necessary because, on branch runs, the bamboo_buildPlanName
     # has the branch and job name as a suffix. These must be removed!
     local planNameInQuestion=${bamboo_buildPlanName:-}
-    planNameInQuestion="${planNameInQuestion// - ${bamboo_repository_branch_name:-}/}"
+    if [[ "master" != "${bamboo_repository_branch_name:-}" ]]; then
+        planNameInQuestion="${planNameInQuestion// - ${bamboo_shortPlanName:-}/}"
+    fi 
     local jobInQuestion="${jobArg:-$planNameInQuestion}"
     [ -z "$jobInQuestion" ] && die "Neither bamboo_buildPlanName variable nor input argument passed."
     local shortName=$(getKey "$jobInQuestion")
