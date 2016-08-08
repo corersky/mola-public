@@ -50,10 +50,10 @@ jobNames[efwSparkClusterFull]="$(getIB 'EFW Spark Cluster (full)')"
 jobNames[efwTezFull]="$(getIB 'EFW Tez (full)')"
 jobNames[yarnFull]="$(getIB 'YARN (full)')"
 jobNames[itTestsLong18]="$(getIB 'Long Running Integration Tests (JDK-1.8)')"
-jobNames[psfUnitTests]="$(getGB 'Parquet Unit Tests')"
-jobNames[psfItTests]="$(getGB 'Parquet Integration Tests')"
-jobNames[psfItTestsLong]="$(getGB 'Parquet Long Running Integration Tests')"
-jobNames[psfEmbeddedCluster]="$(getGB 'Parquet Embedded Cluster')"
+jobNames[psfUnitTests]="$(getIB 'Parquet Unit Tests')"
+jobNames[psfItTests]="$(getIB 'Parquet Integration Tests')"
+jobNames[psfItTestsLong]="$(getIB 'Parquet Long Running Integration Tests')"
+jobNames[psfEmbeddedCluster]="$(getIB 'Parquet Embedded Cluster')"
 
 # Default values
 VERBOSE=0
@@ -366,7 +366,7 @@ function runJob() {
     local planNameInQuestion=${bamboo_buildPlanName:-}
     if [[ "master" != "${bamboo_repository_branch_name:-}" ]]; then
         planNameInQuestion="${planNameInQuestion// - ${bamboo_shortPlanName:-}/}"
-    fi 
+    fi
     local jobInQuestion="${jobArg:-$planNameInQuestion}"
     [ -z "$jobInQuestion" ] && die "Neither bamboo_buildPlanName variable nor input argument passed."
     local shortName=$(getKey "$jobInQuestion")
