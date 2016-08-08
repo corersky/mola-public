@@ -610,7 +610,7 @@ function runJob() {
         # jobNames[itTests18]="$(getGB 'Integration Tests (JDK-1.8)')"
         'itTests18')
             echoInfo "Running...$jobInQuestion"
-            if atLeastVersion 6.2; then
+            if atLeastVersion 9.2; then
                 runGradle 18 19 it
             else
                 copyEc2Properties
