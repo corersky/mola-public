@@ -721,7 +721,7 @@ function runJob() {
 		# jobNames[psfItTestsLong]="$(getGB 'Parquet Long Running Integration Tests')"
 		'psfItTestsLong')
             echoInfo "Running...$jobInQuestion"
-            if atLeastVersion 6.2; then
+            if atLeastVersion 9.2; then
 				notImpemented
             else
                 copyEc2Properties
@@ -740,7 +740,7 @@ function runJob() {
 		# jobNames[psfEmbeddedCluster]="$(getGB 'Parquet Embedded Cluster')"
 		'psfEmbeddedCluster')
             echoInfo "Running...$jobInQuestion"
-            if atLeastVersion 6.2; then
+            if atLeastVersion 9.2; then
 				notImpemented
             else
                 copyEc2Properties
