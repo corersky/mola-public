@@ -29,7 +29,7 @@ setupGitRepositoryReference() {
 			fi
 		else
 			logInfo "Found git reference repository '$gitRefLocation'. Updating..."
-			#git pull --rebase $gitRefLocation
+			git -C $gitRefLocation pull --rebase
 		fi
 	fi
 }
