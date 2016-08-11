@@ -273,7 +273,8 @@ function runAnt() {
     local target=$3
     if onBamboo; then
         echoInfo "Fix for BAM-55: adding tmp directory setting to all builds"
-        ANT_OPTS="$ANT_OPTS -Djava.io.tmpdir=$HOME/.java_io_tmp_for_agent_$bamboo_agentId"
+        mkdir -v "$bamboo_build_working_directory/tmp"
+        ANT_OPTS="$ANT_OPTS -Djava.io.tmpdir=$bamboo_build_working_directory/tmp"
     fi
     setEnvVars
     setJdk $jdkVersion
@@ -290,7 +291,8 @@ function runGradle() {
     local target=$3
     if onBamboo; then
         echoInfo "Fix for BAM-55: adding tmp directory setting to all builds"
-        target="$target -Djava.io.tmpdir=$HOME/.java_io_tmp_for_agent_$bamboo_agentId"
+        mkdir -v "$bamboo_build_working_directory/tmp"
+        target="$target -Djava.io.tmpdir=$bamboo_build_working_directory/tmp"
     fi
     setEnvVars
     setJdk $jdkVersion
