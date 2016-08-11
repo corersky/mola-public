@@ -30,7 +30,7 @@ setupGitRepositoryReference() {
 		else
 			logInfo "Found git reference repository '$gitRefLocation'. Updating..."
 			#git -C $gitRefLocation pull --rebase # option '-C' only available in > v1.8.5
-			git --git-dir="$gitRefLocation/.git" --work-tree="$gitRefLocation" pull --rebase
+			git --git-dir="$gitRefLocation/.git" --work-tree="$gitRefLocation" fetch
 		fi
 	fi
 }
