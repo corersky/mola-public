@@ -390,8 +390,7 @@ function runJob() {
         'compile')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
-                runGradle 17 19 "onAllVersions -i -Ptarget=it-jar"
-                runGradle 17 19 "onAllVersions -i -Ptarget=job-jar"
+                runGradle 17 19 "onAllVersionsIntegTest"
             else
                 myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
                 runAnt 17 19 'clean-all it-jar job-jar'
@@ -413,7 +412,7 @@ function runJob() {
         # jobNames[unitTests]="$(getGB 'Unit Tests')"
         'unitTests')
             echoInfo "Running...$jobInQuestion"
-            if atLeastVersion 6; then
+            if atLeastVersion 6.1; then
                 runGradle 17 19 'test'
             else
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
@@ -424,8 +423,8 @@ function runJob() {
         # jobNames[itTests]="$(getGB 'Integration Tests')"
         'itTests')
             echoInfo "Running...$jobInQuestion"
-            if atLeastVersion 9.2; then
-				notImpemented
+            if atLeastVersion 6; then
+                runGradle 17 19 'downloadEc2StaticPropertyEU integTest'
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic 1024)"
@@ -436,8 +435,8 @@ function runJob() {
         # jobNames[itTestsLong]="$(getGB 'Long Running Integration Tests')"
         'itTestsLong')
             echoInfo "Running...$jobInQuestion"
-            if atLeastVersion 9.2; then
-				notImpemented
+            if atLeastVersion 6; then
+                runGradle 17 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=long'
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
@@ -464,8 +463,8 @@ function runJob() {
         # jobNames[localDB]="$(getGB 'Local Database Tests')"
         'localDB')
             echoInfo "Running...$jobInQuestion"
-            if atLeastVersion 9.2; then
-				notImpemented
+            if atLeastVersion 6; then
+				runGradle 17 19 'dap-common:integTest -Dtest.groups=db_netezza'
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasicWithPlanName 1024)"
@@ -476,8 +475,8 @@ function runJob() {
         # jobNames[remoteDB]="$(getGB 'Remote Database Tests')"
         'remoteDB')
             echoInfo "Running...$jobInQuestion"
-            if atLeastVersion 9.2; then
-				notImpemented
+            if atLeastVersion 6; then
+				runGradle 17 19 'downloadEc2StaticPropertyEU dap-common:integTest dap-conductor:integTest pluginsIntegTest -Dtest.groups=scp,s3,db'
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasicWithPlanName 1024)"
@@ -488,8 +487,8 @@ function runJob() {
         # jobNames[clusterTests]="$(getGB 'Cluster Tests')"
         'embeddedCluster')
             echoInfo "Running...$jobInQuestion"
-            if atLeastVersion 9.2; then
-				notImpemented
+            if atLeastVersion 6; then
+				runGradle 17 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=cluster'
             else
                 copyEc2Properties
 				ANT_OPTS="$(getAntOptsBasic 1024)"
@@ -502,8 +501,8 @@ function runJob() {
         # jobNames[efwLocal]="$(getGB 'EFW Local')"
         'efwLocal')
             echoInfo "Running...$jobInQuestion"
-            if atLeastVersion 9.2; then
-				notImpemented
+            if atLeastVersion 6; then
+				runGradle 17 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=execution_framework -Dexecution-framework=Local'
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsEfwLocal Local)"
@@ -598,7 +597,7 @@ function runJob() {
         # jobNames[findbugs18]="$(getGB 'Findbugs (JDK-1.8)')"
         'findbugs18')
             echoInfo "Running...$jobInQuestion"
-            if atLeastVersion 6.2; then
+            if atLeastVersion 6; then
                 runGradle 18 19 findbugsMain
             else
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
@@ -610,7 +609,7 @@ function runJob() {
         'unitTests18')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6.2; then
-                runGradle 18 19 test
+                runGradle 18 19 'test'
             else
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
                 runAnt 18 19 "clean-all unit"
@@ -621,7 +620,7 @@ function runJob() {
         'itTests18')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 9.2; then
-                runGradle 18 19 it
+                runGradle 18 19 'downloadEc2StaticPropertyEU integTest' 
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic 1024)"
@@ -676,8 +675,8 @@ function runJob() {
 		# jobNames[yarnFull]="$(getIB 'YARN (full)')"
 		'yarnFull')
             echoInfo "Running...$jobInQuestion"
-            if atLeastVersion 9.2; then
-				notImpemented
+            if atLeastVersion 6; then
+				runGradle 17 19 'downloadEc2StaticPropertyEU integTest'
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic 1024)"
@@ -689,7 +688,7 @@ function runJob() {
 		'itTestsLong18')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 9.2; then
-				notImpemented
+				runGradle 18 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=long'
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
