@@ -79,6 +79,7 @@ EOF
 
 function preTasks() {
     echoInfo "In preTasks..."
+    jobCreatesTestXmls=true
     if [ $DRYRUN  -eq 0 ]; then
         printDiskUsage 'PRE '
     fi
@@ -91,7 +92,15 @@ function postTasks() {
         outputDiskUsageForjob
         # If we got this far without an exiting with an error, check for unit-test files.
         # If there are none, add a dummy.
-        addDummyUnitTestXmlIfNeeded
+        if [ jobCreatesTestXmls == 'false' ]; then
+            addDummyUnitTestXmlIfNeeded
+        else
+            echoInfo "DRYRUN: Adding a dummy test xml if none found..."
+        fi
+    else
+        if [[ "$jobCreatesTestXmls" == 'false' ]]; then
+            echoInfo "DRYRUN: Adding a dummy test xml if none found..."
+        fi
     fi
 }
 
@@ -389,8 +398,9 @@ function runJob() {
         # jobNames[compile]="$(getGB 'Compile Datameer Distributions')"
         'compile')
             echoInfo "Running...$jobInQuestion"
+            jobCreatesTestXmls=false
             if atLeastVersion 6; then
-                runGradle 17 19 "onAllVersionsIntegTest"
+                runGradle 17 19 "onAllVersionsCompileIntegTestJava onAllVersionsJobJar"
             else
                 myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
                 runAnt 17 19 'clean-all it-jar job-jar'
@@ -400,6 +410,7 @@ function runJob() {
         # jobNames[findbugs]="$(getGB 'Findbugs')"
         'findbugs')
             echoInfo "Running...$jobInQuestion"
+            jobCreatesTestXmls=false
             if atLeastVersion 6; then
                 runGradle 17 19 'findbugsMain'
                 echoInfo "Exit code: $?"
@@ -597,6 +608,7 @@ function runJob() {
         # jobNames[findbugs18]="$(getGB 'Findbugs (JDK-1.8)')"
         'findbugs18')
             echoInfo "Running...$jobInQuestion"
+            jobCreatesTestXmls=false
             if atLeastVersion 6; then
                 runGradle 18 19 findbugsMain
             else
@@ -620,7 +632,7 @@ function runJob() {
         'itTests18')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 9.2; then
-                runGradle 18 19 'downloadEc2StaticPropertyEU integTest' 
+                runGradle 18 19 'downloadEc2StaticPropertyEU integTest'
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic 1024)"
