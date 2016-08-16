@@ -92,10 +92,8 @@ function postTasks() {
         outputDiskUsageForjob
         # If we got this far without an exiting with an error, check for unit-test files.
         # If there are none, add a dummy.
-        if [ jobCreatesTestXmls == 'false' ]; then
+        if [[ "$jobCreatesTestXmls" == 'false' ]]; then
             addDummyUnitTestXmlIfNeeded
-        else
-            echoInfo "DRYRUN: Adding a dummy test xml if none found..."
         fi
     else
         if [[ "$jobCreatesTestXmls" == 'false' ]]; then
