@@ -563,7 +563,7 @@ function runJob() {
 				notImpemented
             else
                 copyEc2Properties
-				ANT_OPTS=$(getAntOptsEfw SparkClient)
+				myEnvVariables[ANT_OPTS]=$(getAntOptsEfw SparkClient)
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
             ;;
