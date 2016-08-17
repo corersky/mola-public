@@ -141,7 +141,9 @@ function echoDebug() {
 
 function copyEc2Properties() {
     echoInfo "Downloading ec2.properties for CI Server..."
-    exec scp download@localhost:"$BAMBOO_EC2_PROPS" "$bamboo_build_working_directory/modules/dap-common/src/it/resources/ec2.properties"
+    if [ -e "$BAMBOO_EC2_PROPS" ]; then
+        exec cp "$BAMBOO_EC2_PROPS" "$bamboo_build_working_directory/modules/dap-common/src/it/resources/ec2.properties"
+    fi
 }
 
 function listJobs() {
