@@ -485,7 +485,7 @@ function runJob() {
         'remoteDB')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
-				runGradle 17 19 'downloadEc2StaticPropertyEU dap-common:integTest dap-conductor:integTest pluginsIntegTest -Dtest.groups=scp,s3,db'
+				runGradle 17 19 'downloadEc2PropertyEU downloadEc2StaticPropertyEU dap-common:integTest dap-conductor:integTest pluginsIntegTest -Dtest.groups=scp,s3,db'
             else
                 copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasicWithPlanName 1024)"
