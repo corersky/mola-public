@@ -8,7 +8,7 @@ IFS=$'\n\t'
 # Defaults
 ####################################################
 DU_LOG="/var/tmp/du.log"
-BAMBOO_EC2_PROPS='/home/bamboo/.ec2/ec2.properties'
+BAMBOO_EC2_PROPS='/home/download/ec2/ec2.properties.bamboo'
 BAMBOO_JDK_8_STRING='JDK-1.8'
 BAMBOO_JDK_DEFAULT='JDK-1.7'
 GRADLE_WRAPPER='./gradlew'
@@ -140,9 +140,8 @@ function echoDebug() {
 }
 
 function copyEc2Properties() {
-    if [ -e "$BAMBOO_EC2_PROPS" ]; then
-        exec cp "$BAMBOO_EC2_PROPS" "$bamboo_build_working_directory/modules/dap-common/src/it/resources/ec2.properties"
-    fi
+    echoInfo "Downloading ec2.properties for CI Server..."
+    exec scp download@localhost:"$BAMBOO_EC2_PROPS" "$bamboo_build_working_directory/modules/dap-common/src/it/resources/ec2.properties"
 }
 
 function listJobs() {
@@ -282,6 +281,7 @@ function runAnt() {
         echoInfo "Fix for BAM-55: adding tmp directory setting to all builds"
         mkdir -v "$bamboo_build_working_directory/tmp"
         ANT_OPTS="$ANT_OPTS -Djava.io.tmpdir=$bamboo_build_working_directory/tmp"
+        copyEc2Properties
     fi
     setEnvVars
     setJdk $jdkVersion
@@ -300,6 +300,7 @@ function runGradle() {
         echoInfo "Fix for BAM-55: adding tmp directory setting to all builds"
         mkdir -v "$bamboo_build_working_directory/tmp"
         target="$target -Djava.io.tmpdir=$bamboo_build_working_directory/tmp"
+        copyEc2Properties
     fi
     setEnvVars
     setJdk $jdkVersion
@@ -435,7 +436,6 @@ function runJob() {
             if atLeastVersion 6; then
                 runGradle 17 19 'downloadEc2StaticPropertyEU integTest'
             else
-                copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic 1024)"
                 runAnt 17 19 "clean-all download-ec2-static-property it"
             fi
@@ -447,7 +447,6 @@ function runJob() {
             if atLeastVersion 6; then
                 runGradle 17 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=long'
             else
-                copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
                 runAnt 17 19 "clean-all download-ec2-static-property it-long"
             fi
@@ -463,7 +462,6 @@ function runJob() {
                 exec cd modules/dap-conductor
                 runNpm 'test'
             else
-                copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
                 runAnt 17 19 "clean-all specs"
             fi
@@ -475,7 +473,6 @@ function runJob() {
             if atLeastVersion 6; then
 				runGradle 17 19 'dap-common:integTest -Dtest.groups=db_netezza'
             else
-                copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasicWithPlanName 1024)"
                 runAnt 17 19 "clean-all it-db-netezza"
             fi
@@ -485,10 +482,8 @@ function runJob() {
         'remoteDB')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
-                copyEc2Properties
 				runGradle 17 19 'downloadEc2StaticPropertyEU dap-common:integTest dap-conductor:integTest pluginsIntegTest -Dtest.groups=scp,s3,db'
             else
-                copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasicWithPlanName 1024)"
                 runAnt 17 19 "clean-all download-ec2-static-property it-external-resources-managed"
             fi
@@ -500,7 +495,6 @@ function runJob() {
             if atLeastVersion 6; then
 				runGradle 17 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=cluster'
             else
-                copyEc2Properties
 				ANT_OPTS="$(getAntOptsBasic 1024)"
 				ANT_OPTS="$ANT_OPTS -Dtest.groups=cluster"
 				myEnvVariables[ANT_OPTS]="$ANT_OPTS"
@@ -514,7 +508,6 @@ function runJob() {
             if atLeastVersion 6; then
 				runGradle 17 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=execution_framework -Dexecution-framework=Local'
             else
-                copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsEfwLocal Local)"
                 runAnt 17 19 "clean-all download-ec2-static-property it"
             fi
@@ -526,7 +519,6 @@ function runJob() {
             if atLeastVersion 9.2; then
 				notImpemented
             else
-                copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsEfw SmallJob)"
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
@@ -538,7 +530,6 @@ function runJob() {
             if atLeastVersion 9.2; then
 				notImpemented
             else
-                copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsEfw MapReduce)"
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
@@ -550,7 +541,6 @@ function runJob() {
             if atLeastVersion 9.2; then
 				notImpemented
             else
-                copyEc2Properties
 				myEnvVariables[ANT_OPTS]=$(getAntOptsEfw Smart)
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
@@ -562,7 +552,6 @@ function runJob() {
             if atLeastVersion 9.2; then
 				notImpemented
             else
-                copyEc2Properties
 				myEnvVariables[ANT_OPTS]=$(getAntOptsEfw SparkClient)
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
@@ -574,7 +563,6 @@ function runJob() {
             if atLeastVersion 9.2; then
 				notImpemented
             else
-                copyEc2Properties
 				myEnvVariables[ANT_OPTS]=$(getAntOptsEfw SparkCluster)
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
@@ -586,7 +574,6 @@ function runJob() {
             if atLeastVersion 9.2; then
 				notImpemented
             else
-                copyEc2Properties
 				myEnvVariables[ANT_OPTS]=$(getAntOptsEfw SparkSX)
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
@@ -598,7 +585,6 @@ function runJob() {
             if atLeastVersion 9.2; then
 				notImpemented
             else
-                copyEc2Properties
 				myEnvVariables[ANT_OPTS]=$(getAntOptsEfw Tez dist_sanity)
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
@@ -633,7 +619,6 @@ function runJob() {
             if atLeastVersion 9.2; then
                 runGradle 18 19 'downloadEc2StaticPropertyEU integTest'
             else
-                copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic 1024)"
                 runAnt 18 19 "clean-all download-ec2-static-property it"
             fi
@@ -645,7 +630,6 @@ function runJob() {
             if atLeastVersion 9.2; then
 				notImpemented
             else
-                copyEc2Properties
 				ANT_OPTS="$(getAntOptsEfw SparkClient cluster,dist_sanity)"
 				ANT_OPTS="$ANT_OPTS -DinstanceType=m3.large"
 				myEnvVariables[ANT_OPTS]="$ANT_OPTS"
@@ -659,7 +643,6 @@ function runJob() {
             if atLeastVersion 9.2; then
 				notImpemented
             else
-                copyEc2Properties
 				ANT_OPTS="$(getAntOptsEfw SparkCluster cluster,dist_sanity)"
 				ANT_OPTS="$ANT_OPTS -DinstanceType=m3.large"
 				ANT_OPTS="$ANT_OPTS -Dspark.thrift=true"
@@ -689,7 +672,6 @@ function runJob() {
             if atLeastVersion 6; then
 				runGradle 17 19 'downloadEc2StaticPropertyEU integTest'
             else
-                copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic 1024)"
                 runAnt 17 19 "clean-all download-ec2-static-property it"
             fi
@@ -701,7 +683,6 @@ function runJob() {
             if atLeastVersion 9.2; then
 				runGradle 18 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=long'
             else
-                copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
                 runAnt 18 19 "clean-all download-ec2-static-property it-long"
             fi
@@ -713,7 +694,6 @@ function runJob() {
             if atLeastVersion 9.2; then
 				notImpemented
             else
-                copyEc2Properties
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic) $PARQUET"
                 runAnt 17 19 "clean-all unit"
             fi
@@ -725,7 +705,6 @@ function runJob() {
             if atLeastVersion 9.2; then
 				notImpemented
             else
-                copyEc2Properties
                 ANT_OPTS="$ANT_OPTS $PARQUET"
                 ANT_OPTS="$ANT_OPTS -Xmx1024m -XX:MaxPermSize=256m"
                 ANT_OPTS="$ANT_OPTS -XX:SurvivorRatio=6"
@@ -744,7 +723,6 @@ function runJob() {
             if atLeastVersion 9.2; then
 				notImpemented
             else
-                copyEc2Properties
                 ANT_OPTS="$ANT_OPTS $PARQUET"
                 ANT_OPTS="$ANT_OPTS -Xmx1024m -XX:MaxPermSize=256m"
                 ANT_OPTS="$ANT_OPTS -XX:SurvivorRatio=6"
@@ -763,7 +741,6 @@ function runJob() {
             if atLeastVersion 9.2; then
 				notImpemented
             else
-                copyEc2Properties
                 ANT_OPTS="$ANT_OPTS $PARQUET"
                 ANT_OPTS="$ANT_OPTS -Dtest.groups=cluster,dist_sanity"
                 ANT_OPTS="$ANT_OPTS -Dtest.cluster=in_vm"
