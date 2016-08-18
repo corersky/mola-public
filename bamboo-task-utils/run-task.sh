@@ -587,7 +587,7 @@ function runJob() {
             if atLeastVersion 9.2; then
 				notImpemented
             else
-				myEnvVariables[ANT_OPTS]=$(getAntOptsEfw Tez dist_sanity)
+				myEnvVariables[ANT_OPTS]=$(getAntOptsEfw Tez)
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
             ;;
