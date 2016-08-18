@@ -668,17 +668,6 @@ function runJob() {
             fi
             ;;
 
-		# jobNames[yarnFull]="$(getIB 'YARN (full)')"
-		'yarnFull')
-            echoInfo "Running...$jobInQuestion"
-            if atLeastVersion 6; then
-				runGradle 17 19 'downloadEc2StaticPropertyEU integTest'
-            else
-				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic 1024)"
-                runAnt 17 19 "clean-all download-ec2-static-property it"
-            fi
-            ;;
-
 		# jobNames[itTestsLong18]="$(getIB 'Long Running Integration Tests (JDK-1.8)')"
 		'itTestsLong18')
             echoInfo "Running...$jobInQuestion"
