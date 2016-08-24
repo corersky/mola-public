@@ -9,6 +9,7 @@ IFS=$'\n\t'
 ####################################################
 DU_LOG="/var/tmp/du.log"
 BAMBOO_EC2_PROPS='/home/bamboo/.ec2/ec2.properties'
+DOWNLOAD_USER_EC2_PROPS='/home/download/ec2/ec2.properties.bamboo'
 BAMBOO_JDK_8_STRING='JDK-1.8'
 BAMBOO_JDK_DEFAULT='JDK-1.7'
 GRADLE_WRAPPER='./gradlew'
@@ -141,9 +142,10 @@ function echoDebug() {
 
 function copyEc2Properties() {
     echoInfo "Downloading ec2.properties for CI Server..."
-    if [ -e "$BAMBOO_EC2_PROPS" ]; then
-        exec cp "$BAMBOO_EC2_PROPS" "$bamboo_build_working_directory/modules/dap-common/src/it/resources/ec2.properties"
-    fi
+    scp download@build.datameer.com:$DOWNLOAD_USER_EC2_PROPS "$bamboo_build_working_directory/modules/dap-common/src/it/resources/ec2.properties"
+    # if [ -e "$BAMBOO_EC2_PROPS" ]; then
+    #     exec cp "$BAMBOO_EC2_PROPS" "$bamboo_build_working_directory/modules/dap-common/src/it/resources/ec2.properties"
+    # fi
 }
 
 function listJobs() {
@@ -660,7 +662,6 @@ function runJob() {
             if atLeastVersion 9.2; then
 				notImpemented
             else
-				copyEc2Properties
 				ANT_OPTS="$(getAntOptsEfw Tez cluster,dist_sanity)"
 				myEnvVariables[ANT_OPTS]="$ANT_OPTS"
                 runAnt 17 19 "clean-all download-ec2-static-property it-ec2-managed"
