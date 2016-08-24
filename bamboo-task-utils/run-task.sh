@@ -285,6 +285,8 @@ function runAnt() {
         echoInfo "Fix for BAM-55: adding tmp directory setting to all builds"
         mkdir -v "$bamboo_build_working_directory/tmp"
         ANT_OPTS="$ANT_OPTS -Djava.io.tmpdir=$bamboo_build_working_directory/tmp"
+        echoInfo "Adding plan name per default"
+        ANT_OPTS="$ANT_OPTS $(getAntOptPlanName)"
         copyEc2Properties
     fi
     setEnvVars
@@ -304,6 +306,8 @@ function runGradle() {
         echoInfo "Fix for BAM-55: adding tmp directory setting to all builds"
         mkdir -v "$bamboo_build_working_directory/tmp"
         target="$target -Djava.io.tmpdir=$bamboo_build_working_directory/tmp"
+        echoInfo "Adding plan name per default"
+        target="$target $(getGradleOptPlanName)"
         copyEc2Properties
     fi
     setEnvVars
@@ -347,13 +351,6 @@ function getAntOptsBasic() {
 	echo "$ANT_OPTS"
 }
 
-function getAntOptsBasicWithPlanName() {
-	local ANT_OPTS
-	ANT_OPTS="$(getAntOptsBasic $*)"
-	ANT_OPTS="$ANT_OPTS $(getAntOptPlanName)"
-	echo "$ANT_OPTS"
-}
-
 function getAntOptsEfwLocal() {
 	local ANT_OPTS=''
 	ANT_OPTS="$ANT_OPTS -Dhalt.on.failure=false -DshowOutput=false"
@@ -377,6 +374,14 @@ function getAntOptPlanName() {
         echo "-Dplan.name=${bamboo_buildResultKey}-${bamboo_repository_branch_name}"
     else
         echo "-Dplan.name=${bamboo_buildResultKey:-dummyKey}-${bamboo_repository_branch_name:-dummyBranch}"
+    fi
+}
+
+function getGradleOptPlanName() {
+    if onBamboo; then
+        echo "-PplanName=${bamboo_buildResultKey}-${bamboo_repository_branch_name}"
+    else
+        echo "-PplanName=${bamboo_buildResultKey:-dummyKey}-${bamboo_repository_branch_name:-dummyBranch}"
     fi
 }
 
@@ -477,7 +482,7 @@ function runJob() {
             if atLeastVersion 6; then
 				runGradle 17 19 'dap-common:integTest -Dtest.groups=db_netezza'
             else
-				myEnvVariables[ANT_OPTS]="$(getAntOptsBasicWithPlanName 1024)"
+				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic 1024)"
                 runAnt 17 19 "clean-all it-db-netezza"
             fi
             ;;
@@ -488,7 +493,7 @@ function runJob() {
             if atLeastVersion 6; then
 				runGradle 17 19 'downloadEc2StaticPropertyEU dap-common:integTest dap-conductor:integTest pluginsIntegTest -Dtest.groups=scp,s3,db'
             else
-				myEnvVariables[ANT_OPTS]="$(getAntOptsBasicWithPlanName 1024)"
+				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic 1024)"
                 runAnt 17 19 "clean-all download-ec2-static-property it-external-resources-managed"
             fi
             ;;
