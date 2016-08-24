@@ -486,8 +486,11 @@ function runJob() {
         # jobNames[remoteDB]="$(getGB 'Remote Database Tests')"
         'remoteDB')
             echoInfo "Running...$jobInQuestion"
-            if atLeastVersion 6; then
-				runGradle 17 19 'downloadEc2StaticPropertyEU dap-common:integTest dap-conductor:integTest pluginsIntegTest -Dtest.groups=scp,s3,db'
+            if atLeastVersion 9.2; then
+				notImpemented
+                # not using until the necessary gradle tasks are implemented
+                # see: https://jira.datameer.com/browse/BUILD-128 
+				# runGradle 17 19 'downloadEc2StaticPropertyEU dap-common:integTest dap-conductor:integTest pluginsIntegTest -Dtest.groups=scp,s3,db'
             else
 				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic 1024)"
                 runAnt 17 19 "clean-all download-ec2-static-property it-external-resources-managed"
