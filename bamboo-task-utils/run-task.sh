@@ -378,11 +378,7 @@ function getAntOptPlanName() {
 }
 
 function getGradleOptPlanName() {
-    if onBamboo; then
-        echo "-PplanName=${bamboo_buildResultKey}-${bamboo_repository_branch_name}"
-    else
-        echo "-PplanName=${bamboo_buildResultKey:-dummyKey}-${bamboo_repository_branch_name:-dummyBranch}"
-    fi
+    getAntOptPlanName
 }
 
 function runJob() {
