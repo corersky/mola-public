@@ -49,7 +49,6 @@ jobNames[remoteDB]="$(getGB 'Remote Database Tests')"
 jobNames[efwSparkClientFull]="$(getIB 'EFW Spark Client (full)')"
 jobNames[efwSparkClusterFull]="$(getIB 'EFW Spark Cluster (full)')"
 jobNames[efwTezFull]="$(getIB 'EFW Tez (full)')"
-jobNames[yarnFull]="$(getIB 'YARN (full)')"
 jobNames[itTestsLong18]="$(getIB 'Long Running Integration Tests (JDK-1.8)')"
 jobNames[psfUnitTests]="$(getIB 'Parquet Unit Tests')"
 jobNames[psfItTests]="$(getIB 'Parquet Integration Tests')"
@@ -262,6 +261,10 @@ function setEnvVars() {
     if onBamboo; then
         myEnvVariables[GRADLE_USER_HOME]="$HOME/.gradle_for_agent_$bamboo_agentId"
     fi
+    # Add ANT_OPTS again if not null
+    if [ -n "$ANT_OPTS" ]; then
+        myEnvVariables[ANT_OPTS]="$ANT_OPTS"
+    fi
     for i in "${!myEnvVariables[@]}"
     do
         echoInfo "Exporting... $i=${myEnvVariables[$i]}"
@@ -285,9 +288,9 @@ function runAnt() {
         echoInfo "Fix for BAM-55: adding tmp directory setting to all builds"
         mkdir -v "$bamboo_build_working_directory/tmp"
         ANT_OPTS="$ANT_OPTS -Djava.io.tmpdir=$bamboo_build_working_directory/tmp"
+        copyEc2Properties
         echoInfo "Adding plan name per default"
         ANT_OPTS="$ANT_OPTS $(getAntOptPlanName)"
-        copyEc2Properties
     fi
     setEnvVars
     setJdk $jdkVersion
@@ -337,36 +340,35 @@ function getKey() {
 }
 
 function notImpemented() {
-	if [ $DRYRUN  -eq 1 ]; then
-		echoInfo "DRYRUN: Job not yet implemented"
-	else
-		die "Not yet implemented" # TODO: what to do here?
-	fi
+    if [ $DRYRUN  -eq 1 ]; then
+        echoInfo "DRYRUN: Job not yet implemented"
+    else
+        die "Not yet implemented" # TODO: what to do here?
+    fi
 }
 
 function getAntOptsBasic() {
-	local ANT_OPTS=''
-	ANT_OPTS="$ANT_OPTS -Dhalt.on.failure=false -DshowOutput=false"
-	ANT_OPTS="$ANT_OPTS -Xmx${1:-512}m -XX:MaxPermSize=256m"
-	echo "$ANT_OPTS"
+    local ANT_OPTS=''
+    ANT_OPTS="$ANT_OPTS -Dhalt.on.failure=false -DshowOutput=false"
+    ANT_OPTS="$ANT_OPTS -Xmx${1:-512}m -XX:MaxPermSize=256m"
+    echo "$ANT_OPTS"
 }
 
 function getAntOptsEfwLocal() {
-	local ANT_OPTS=''
-	ANT_OPTS="$ANT_OPTS -Dhalt.on.failure=false -DshowOutput=false"
-	ANT_OPTS="$ANT_OPTS -Xmx2048m"
-	ANT_OPTS="$ANT_OPTS -Dtest.groups=${2:-execution_framework}"
-	ANT_OPTS="$ANT_OPTS -Dexecution-framework=$1"
-	echo "$ANT_OPTS"
+    local ANT_OPTS=''
+    ANT_OPTS="$ANT_OPTS -Dhalt.on.failure=false -DshowOutput=false"
+    ANT_OPTS="$ANT_OPTS -Xmx2048m"
+    ANT_OPTS="$ANT_OPTS -Dtest.groups=${2:-execution_framework}"
+    ANT_OPTS="$ANT_OPTS -Dexecution-framework=$1"
+    echo "$ANT_OPTS"
 }
 
 function getAntOptsEfw() {
-	local ANT_OPTS=''
-	ANT_OPTS="$(getAntOptsEfwLocal $*)"
-	ANT_OPTS="$ANT_OPTS -Dhadoop.dist=cdh-5.4.2-mr2"
-	ANT_OPTS="$ANT_OPTS -Dtest.cluster=ec2"
-	ANT_OPTS="$ANT_OPTS $(getAntOptPlanName)"
-	echo "$ANT_OPTS"
+    local ANT_OPTS=''
+    ANT_OPTS="$(getAntOptsEfwLocal $*)"
+    ANT_OPTS="$ANT_OPTS -Dhadoop.dist=cdh-5.4.2-mr2"
+    ANT_OPTS="$ANT_OPTS -Dtest.cluster=ec2"
+    echo "$ANT_OPTS"
 }
 
 function getAntOptPlanName() {
@@ -396,7 +398,7 @@ function runJob() {
     [ -n "$shortName" ] || die "Could not find '$jobInQuestion' in job list. Check the supported job list."
     echoInfo "Looking for '$jobInQuestion',  with shortName '$shortName'"
 
-	local ANT_OPTS=''
+    local ANT_OPTS=''
     case "$shortName" in
 
         # jobNames[compile]="$(getGB 'Compile Datameer Distributions')"
@@ -406,7 +408,7 @@ function runJob() {
             if atLeastVersion 6; then
                 runGradle 17 19 "onAllVersionsCompileIntegTestJava onAllVersionsJobJar"
             else
-                myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
+                ANT_OPTS="$(getAntOptsBasic)"
                 runAnt 17 19 'clean-all it-jar job-jar'
             fi
             ;;
@@ -419,7 +421,7 @@ function runJob() {
                 runGradle 17 19 'findbugsMain'
                 echoInfo "Exit code: $?"
             else
-				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
+                ANT_OPTS="$(getAntOptsBasic)"
                 runAnt 17 19 'clean-all findbugs-core findbugs-plugins'
             fi
             ;;
@@ -430,7 +432,7 @@ function runJob() {
             if atLeastVersion 6.1; then
                 runGradle 17 19 'test'
             else
-				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
+                ANT_OPTS="$(getAntOptsBasic)"
                 runAnt 17 19 "clean-all unit"
             fi
             ;;
@@ -441,7 +443,7 @@ function runJob() {
             if atLeastVersion 6; then
                 runGradle 17 19 'downloadEc2StaticPropertyEU integTest'
             else
-				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic 1024)"
+                ANT_OPTS="$(getAntOptsBasic 1024)"
                 runAnt 17 19 "clean-all download-ec2-static-property it"
             fi
             ;;
@@ -452,14 +454,14 @@ function runJob() {
             if atLeastVersion 6; then
                 runGradle 17 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=long'
             else
-				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
+                ANT_OPTS="$(getAntOptsBasic)"
                 runAnt 17 19 "clean-all download-ec2-static-property it-long"
             fi
             ;;
 
         # jobNames[jsSpecs]="$(getGB 'Javascript Specs')"
         'jsSpecs')
-			echoInfo "Running...$jobInQuestion"
+            echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
                 myEnvVariables[CHROME_BIN]="/opt/google/chrome/google-chrome"
                 myEnvVariables[FIREFOX_BIN]="/opt/firefox_30.0_js/firefox"
@@ -467,7 +469,7 @@ function runJob() {
                 exec cd modules/dap-conductor
                 runNpm 'test'
             else
-				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
+                ANT_OPTS="$(getAntOptsBasic)"
                 runAnt 17 19 "clean-all specs"
             fi
             ;;
@@ -476,9 +478,9 @@ function runJob() {
         'localDB')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
-				runGradle 17 19 'dap-common:integTest -Dtest.groups=db_netezza'
+                runGradle 17 19 'dap-common:integTest -Dtest.groups=db_netezza'
             else
-				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic 1024)"
+                ANT_OPTS="$(getAntOptsBasic 1024)"
                 runAnt 17 19 "clean-all it-db-netezza"
             fi
             ;;
@@ -487,12 +489,12 @@ function runJob() {
         'remoteDB')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 9.2; then
-				notImpemented
+                notImpemented
                 # not using until the necessary gradle tasks are implemented
-                # see: https://jira.datameer.com/browse/BUILD-128 
-				# runGradle 17 19 'downloadEc2StaticPropertyEU dap-common:integTest dap-conductor:integTest pluginsIntegTest -Dtest.groups=scp,s3,db'
+                # see: https://jira.datameer.com/browse/BUILD-128
+                # runGradle 17 19 'downloadEc2StaticPropertyEU dap-common:integTest dap-conductor:integTest pluginsIntegTest -Dtest.groups=scp,s3,db'
             else
-				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic 1024)"
+                ANT_OPTS="$(getAntOptsBasic 1024)"
                 runAnt 17 19 "clean-all download-ec2-static-property it-external-resources-managed"
             fi
             ;;
@@ -501,11 +503,10 @@ function runJob() {
         'embeddedCluster')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
-				runGradle 17 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=cluster'
+                runGradle 17 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=cluster'
             else
-				ANT_OPTS="$(getAntOptsBasic 1024)"
-				ANT_OPTS="$ANT_OPTS -Dtest.groups=cluster"
-				myEnvVariables[ANT_OPTS]="$ANT_OPTS"
+                ANT_OPTS="$(getAntOptsBasic 1024)"
+                ANT_OPTS="$ANT_OPTS -Dtest.groups=cluster"
                 runAnt 17 19 "clean-all download-ec2-static-property it"
             fi
             ;;
@@ -514,9 +515,9 @@ function runJob() {
         'efwLocal')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
-				runGradle 17 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=execution_framework -Dexecution-framework=Local'
+                runGradle 17 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=execution_framework -Dexecution-framework=Local'
             else
-				myEnvVariables[ANT_OPTS]="$(getAntOptsEfwLocal Local)"
+                ANT_OPTS="$(getAntOptsEfwLocal Local)"
                 runAnt 17 19 "clean-all download-ec2-static-property it"
             fi
             ;;
@@ -525,9 +526,9 @@ function runJob() {
         'efwSmallJob')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 9.2; then
-				notImpemented
+                notImpemented
             else
-				myEnvVariables[ANT_OPTS]="$(getAntOptsEfw SmallJob)"
+                ANT_OPTS="$(getAntOptsEfw SmallJob)"
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
             ;;
@@ -536,9 +537,9 @@ function runJob() {
         'efwMapReduce')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 9.2; then
-				notImpemented
+                notImpemented
             else
-				myEnvVariables[ANT_OPTS]="$(getAntOptsEfw MapReduce)"
+                ANT_OPTS="$(getAntOptsEfw MapReduce)"
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
             ;;
@@ -547,9 +548,9 @@ function runJob() {
         'efwSmart')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 9.2; then
-				notImpemented
+                notImpemented
             else
-				myEnvVariables[ANT_OPTS]=$(getAntOptsEfw Smart)
+                ANT_OPTS=$(getAntOptsEfw Smart)
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
             ;;
@@ -558,9 +559,9 @@ function runJob() {
         'efwSparkClient')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 9.2; then
-				notImpemented
+                notImpemented
             else
-				myEnvVariables[ANT_OPTS]=$(getAntOptsEfw SparkClient)
+                ANT_OPTS=$(getAntOptsEfw SparkClient)
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
             ;;
@@ -569,9 +570,9 @@ function runJob() {
         'efwSparkCluster')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 9.2; then
-				notImpemented
+                notImpemented
             else
-				myEnvVariables[ANT_OPTS]=$(getAntOptsEfw SparkCluster)
+                ANT_OPTS=$(getAntOptsEfw SparkCluster)
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
             ;;
@@ -580,9 +581,9 @@ function runJob() {
         'efwSparkSX')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 9.2; then
-				notImpemented
+                notImpemented
             else
-				myEnvVariables[ANT_OPTS]=$(getAntOptsEfw SparkSX)
+                ANT_OPTS=$(getAntOptsEfw SparkSX)
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
             ;;
@@ -591,9 +592,9 @@ function runJob() {
         'efwTez')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 9.2; then
-				notImpemented
+                notImpemented
             else
-				myEnvVariables[ANT_OPTS]=$(getAntOptsEfw Tez)
+                ANT_OPTS=$(getAntOptsEfw Tez)
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
             ;;
@@ -605,7 +606,7 @@ function runJob() {
             if atLeastVersion 6; then
                 runGradle 18 19 findbugsMain
             else
-				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
+                ANT_OPTS="$(getAntOptsBasic)"
                 runAnt 18 19 "clean-all findbugs-core findbugs-plugins"
             fi
             ;;
@@ -616,7 +617,7 @@ function runJob() {
             if atLeastVersion 6.2; then
                 runGradle 18 19 'test'
             else
-				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
+                ANT_OPTS="$(getAntOptsBasic)"
                 runAnt 18 19 "clean-all unit"
             fi
             ;;
@@ -627,79 +628,77 @@ function runJob() {
             if atLeastVersion 9.2; then
                 runGradle 18 19 'downloadEc2StaticPropertyEU integTest'
             else
-				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic 1024)"
+                ANT_OPTS="$(getAntOptsBasic 1024)"
                 runAnt 18 19 "clean-all download-ec2-static-property it"
             fi
             ;;
 
-		# jobNames[efwSparkClientFull]="$(getIB 'EFW Spark Client (full)')"
-		'efwSparkClientFull')
+        # jobNames[efwSparkClientFull]="$(getIB 'EFW Spark Client (full)')"
+        'efwSparkClientFull')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 9.2; then
-				notImpemented
+                notImpemented
             else
-				ANT_OPTS="$(getAntOptsEfw SparkClient cluster,dist_sanity)"
-				ANT_OPTS="$ANT_OPTS -DinstanceType=m3.large"
-				myEnvVariables[ANT_OPTS]="$ANT_OPTS"
+                ANT_OPTS="$(getAntOptsEfw SparkClient cluster,dist_sanity)"
+                ANT_OPTS="$ANT_OPTS -DinstanceType=m3.large"
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
             ;;
 
-		# jobNames[efwSparkClusterFull]="$(getIB 'EFW Spark Cluster (full)')"
-		'efwSparkClusterFull')
+        # jobNames[efwSparkClusterFull]="$(getIB 'EFW Spark Cluster (full)')"
+        'efwSparkClusterFull')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 9.2; then
-				notImpemented
+                notImpemented
             else
-				ANT_OPTS="$(getAntOptsEfw SparkCluster cluster,dist_sanity)"
-				ANT_OPTS="$ANT_OPTS -DinstanceType=m3.large"
-				ANT_OPTS="$ANT_OPTS -Dspark.thrift=true"
-				myEnvVariables[ANT_OPTS]="$ANT_OPTS"
+                ANT_OPTS="$(getAntOptsEfw SparkCluster cluster,dist_sanity)"
+                ANT_OPTS="$ANT_OPTS -DinstanceType=m3.large"
+                ANT_OPTS="$ANT_OPTS -Dspark.thrift=true"
                 runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
             fi
             ;;
 
-		# jobNames[efwTezFull]="$(getIB 'EFW Tez (full)')"
+        # jobNames[efwTezFull]="$(getIB 'EFW Tez (full)')"
 
-		'efwTezFull')
+        'efwTezFull')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 9.2; then
-				notImpemented
+                notImpemented
             else
-				ANT_OPTS="$(getAntOptsEfw Tez cluster,dist_sanity)"
-				myEnvVariables[ANT_OPTS]="$ANT_OPTS"
+                ANT_OPTS="$(getAntOptsEfw Tez cluster,dist_sanity)"
+                ANT_OPTS="$ANT_OPTS"
                 runAnt 17 19 "clean-all download-ec2-static-property it-ec2-managed"
-				# TODO: why no unit test? (comparing to e.g. efwSparkClientFull)
+                # TODO: why no unit test? (comparing to e.g. efwSparkClientFull)
             fi
             ;;
 
-		# jobNames[itTestsLong18]="$(getIB 'Long Running Integration Tests (JDK-1.8)')"
-		'itTestsLong18')
+        # jobNames[itTestsLong18]="$(getIB 'Long Running Integration Tests (JDK-1.8)')"
+        'itTestsLong18')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 9.2; then
-				runGradle 18 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=long'
+                runGradle 18 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=long'
             else
-				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic)"
+                ANT_OPTS="$(getAntOptsBasic)"
                 runAnt 18 19 "clean-all download-ec2-static-property it-long"
             fi
             ;;
 
-		# jobNames[psfUnitTests]="$(getGB 'Parquet Unit Tests')"
-		'psfUnitTests')
+        # jobNames[psfUnitTests]="$(getGB 'Parquet Unit Tests')"
+        'psfUnitTests')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 9.2; then
-				notImpemented
+                notImpemented
             else
-				myEnvVariables[ANT_OPTS]="$(getAntOptsBasic) $PARQUET"
+                ANT_OPTS="$(getAntOptsBasic) $PARQUET"
                 runAnt 17 19 "clean-all unit"
             fi
             ;;
 
-		# jobNames[psfItTests]="$(getGB 'Parquet Integration Tests')"
-		'psfItTests')
+        # jobNames[psfItTests]="$(getGB 'Parquet Integration Tests')"
+        'psfItTests')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 9.2; then
-				notImpemented
+                notImpemented
             else
                 ANT_OPTS="$ANT_OPTS $PARQUET"
                 ANT_OPTS="$ANT_OPTS -Xmx1024m -XX:MaxPermSize=256m"
@@ -708,16 +707,15 @@ function runJob() {
                 ANT_OPTS="$ANT_OPTS -XX:CMSInitiatingOccupancyFraction=80"
                 ANT_OPTS="$ANT_OPTS -DshowOutput=false"
                 ANT_OPTS="$ANT_OPTS -Dhalt.on.failure=false"
-                myEnvVariables[ANT_OPTS]="$ANT_OPTS"
                 runAnt 17 19 "clean-all download-ec2-static-property it"
             fi
             ;;
 
-		# jobNames[psfItTestsLong]="$(getGB 'Parquet Long Running Integration Tests')"
-		'psfItTestsLong')
+        # jobNames[psfItTestsLong]="$(getGB 'Parquet Long Running Integration Tests')"
+        'psfItTestsLong')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 9.2; then
-				notImpemented
+                notImpemented
             else
                 ANT_OPTS="$ANT_OPTS $PARQUET"
                 ANT_OPTS="$ANT_OPTS -Xmx1024m -XX:MaxPermSize=256m"
@@ -726,16 +724,15 @@ function runJob() {
                 ANT_OPTS="$ANT_OPTS -XX:CMSInitiatingOccupancyFraction=80"
                 ANT_OPTS="$ANT_OPTS -DshowOutput=false"
                 ANT_OPTS="$ANT_OPTS -Dhalt.on.failure=false"
-                myEnvVariables[ANT_OPTS]="$ANT_OPTS"
                 runAnt 17 19 "clean-all download-ec2-static-property it-long"
             fi
             ;;
 
-		# jobNames[psfEmbeddedCluster]="$(getGB 'Parquet Embedded Cluster')"
-		'psfEmbeddedCluster')
+        # jobNames[psfEmbeddedCluster]="$(getGB 'Parquet Embedded Cluster')"
+        'psfEmbeddedCluster')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 9.2; then
-				notImpemented
+                notImpemented
             else
                 ANT_OPTS="$ANT_OPTS $PARQUET"
                 ANT_OPTS="$ANT_OPTS -Dtest.groups=cluster,dist_sanity"
@@ -743,7 +740,6 @@ function runJob() {
                 ANT_OPTS="$ANT_OPTS -Dhalt.on.failure=false"
                 ANT_OPTS="$ANT_OPTS -Xmx768m"
                 ANT_OPTS="$ANT_OPTS -DinstanceType=m3.large"
-                myEnvVariables[ANT_OPTS]="$ANT_OPTS"
                 runAnt 17 19 "clean-all download-ec2-static-property it"
             fi
             ;;
