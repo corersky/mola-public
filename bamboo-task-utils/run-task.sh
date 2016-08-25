@@ -373,7 +373,12 @@ function getAntOptsEfw() {
 
 function getAntOptPlanName() {
     if onBamboo; then
-        echo "-Dplan.name=${bamboo_buildResultKey}-${bamboo_repository_branch_name}"
+        # Git branch can contain '/' and can cause problems with tests that use this property 
+        if [[ 'master' == "$bamboo_repository_branch_name" ]]; then
+            echo "-Dplan.name=${bamboo_buildResultKey}-${bamboo_repository_branch_name}"
+        else
+            echo "-Dplan.name=${bamboo_buildResultKey}-${shortPlanName}"
+        fi
     else
         echo "-Dplan.name=${bamboo_buildResultKey:-dummyKey}-${bamboo_repository_branch_name:-dummyBranch}"
     fi
