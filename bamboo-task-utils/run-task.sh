@@ -311,6 +311,7 @@ function runGradle() {
         target="$target -Djava.io.tmpdir=$bamboo_build_working_directory/tmp"
         echoInfo "Adding plan name per default"
         target="$target $(getGradleOptPlanName)"
+        target="$target -PignoreTestFailures=true"
         copyEc2Properties
     fi
     setEnvVars
