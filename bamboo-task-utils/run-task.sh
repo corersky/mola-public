@@ -412,7 +412,7 @@ function runJob() {
             echoInfo "Running...$jobInQuestion"
             jobCreatesTestXmls=false
             if atLeastVersion 6; then
-                for ver in $(./gradlew versions | grep -E "\t([a-z])+"); do 
+                for ver in $(./gradlew versions | grep -P "^\t[a-z]+"); do
                     runGradle 17 19 "compileIntegTestJava jobJar -DhadoopVersion=$ver"
                 done
             else
