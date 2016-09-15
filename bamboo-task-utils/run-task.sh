@@ -307,7 +307,7 @@ function runGradle() {
     local target=$3
     if onBamboo; then
         echoInfo "Fix for BAM-55: adding tmp directory setting to all builds"
-        mkdir -v "$bamboo_build_working_directory/tmp"
+        mkdir -pv "$bamboo_build_working_directory/tmp"
         target="$target -Djava.io.tmpdir=$bamboo_build_working_directory/tmp"
         echoInfo "Adding plan name per default"
         target="$target $(getGradleOptPlanName)"
