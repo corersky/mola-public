@@ -523,9 +523,10 @@ function runJob() {
         'efwLocal')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
-                runGradle 17 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=execution_framework -Dexecution-framework=Local'
+                runGradle 17 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=execution_framework -Dtest.cluster=local -Dexecution-framework=Local'
             else
                 ANT_OPTS="$(getAntOptsEfwLocal Local)"
+                ANT_OPTS="$ANT_OPTS -Dtest.cluster=local"
                 runAnt 17 19 "clean-all download-ec2-static-property it"
             fi
             ;;
