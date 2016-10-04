@@ -9,6 +9,7 @@ IFS=$'\n\t'
 ####################################################
 DU_LOG="/var/tmp/du.log"
 BAMBOO_EC2_PROPS='/home/bamboo/.ec2/ec2.properties'
+RELEASES_ARCHIVE_DIR='/home/bamboo/ak_releases'
 DOWNLOAD_USER_EC2_PROPS='/home/download/ec2/ec2.properties.bamboo'
 BAMBOO_JDK_8_STRING='JDK-1.8'
 BAMBOO_JDK_DEFAULT='JDK-1.7'
@@ -54,6 +55,8 @@ jobNames[psfUnitTests]="$(getIB 'Parquet Unit Tests')"
 jobNames[psfItTests]="$(getIB 'Parquet Integration Tests')"
 jobNames[psfItTestsLong]="$(getIB 'Parquet Long Running Integration Tests')"
 jobNames[psfEmbeddedCluster]="$(getIB 'Parquet Embedded Cluster')"
+# other builds
+jobNames[allDists]='Datameer Releases - All Distributions - job'
 
 # Default values
 VERBOSE=0
@@ -406,6 +409,24 @@ function runJob() {
 
     local ANT_OPTS=''
     case "$shortName" in
+
+        'allDists')
+            echoInfo "Running...$jobInQuestion"
+            jobCreatesTestXmls=false
+            if atLeastVersion 9; then
+                notImpemented
+            else
+                ANT_OPTS="$(getAntOptsBasic)"
+                runAnt 17 19 'clean-all dist-all-versions'
+                local distArtifactDir="/tmp/dummy-local-archive-dir"
+                if onBamboo; then
+                    distArtifactDir="$RELEASES_ARCHIVE_DIR/$bamboo_planRepository_revision"
+                fi
+                echoInfo "Copying all dist artifacts to '$distArtifactDir'"
+                exec mkdir -p "$distArtifactDir"
+                exec cp "build/dist/*" "$distArtifactDir"
+            fi
+            ;;
 
         # jobNames[compile]="$(getGB 'Compile Datameer Distributions')"
         'compile')
