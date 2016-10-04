@@ -56,7 +56,7 @@ jobNames[psfItTests]="$(getIB 'Parquet Integration Tests')"
 jobNames[psfItTestsLong]="$(getIB 'Parquet Long Running Integration Tests')"
 jobNames[psfEmbeddedCluster]="$(getIB 'Parquet Embedded Cluster')"
 # other builds
-jobNames[allDists]='Datameer Releases - All Distributions - job'
+jobNames[allDists]='Datameer - Releases - All Distributions - job'
 
 # Default values
 VERBOSE=0
