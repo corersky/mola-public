@@ -643,7 +643,7 @@ function runJob() {
         # jobNames[unitTests18]="$(getGB 'Unit Tests (JDK-1.8)')"
         'unitTests18')
             echoInfo "Running...$jobInQuestion"
-            if atLeastVersion 6.2; then
+            if atLeastVersion 6.1; then
                 runGradle 18 19 'test'
             else
                 ANT_OPTS="$(getAntOptsBasic)"
@@ -654,7 +654,7 @@ function runJob() {
         # jobNames[itTests18]="$(getGB 'Integration Tests (JDK-1.8)')"
         'itTests18')
             echoInfo "Running...$jobInQuestion"
-            if atLeastVersion 9.2; then
+            if atLeastVersion 6; then
                 runGradle 18 19 'downloadEc2StaticPropertyEU integTest'
             else
                 ANT_OPTS="$(getAntOptsBasic 1024)"
