@@ -351,6 +351,15 @@ function notImpemented() {
     fi
 }
 
+function shouldNotRun() {
+    local msg="Job should not run. Reason: $1"
+    if [ $DRYRUN  -eq 1 ]; then
+        echoInfo "DRYRUN: $msg"
+    else
+        die "$msg"
+    fi
+}
+
 function getAntOptsBasic() {
     local ANT_OPTS=''
     ANT_OPTS="$ANT_OPTS -Dhalt.on.failure=false -DshowOutput=false"
@@ -645,9 +654,11 @@ function runJob() {
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6.1; then
                 runGradle 18 19 'test'
-            else
+            elif atLeastVersion 6; then
                 ANT_OPTS="$(getAntOptsBasic)"
                 runAnt 18 19 "clean-all unit"
+            else
+                shouldNotRun "Deprecated with BUILD-162"
             fi
             ;;
 
@@ -657,8 +668,7 @@ function runJob() {
             if atLeastVersion 6; then
                 runGradle 18 19 'downloadEc2StaticPropertyEU integTest'
             else
-                ANT_OPTS="$(getAntOptsBasic 1024)"
-                runAnt 18 19 "clean-all download-ec2-static-property it"
+                shouldNotRun "Deprecated with BUILD-162"
             fi
             ;;
 
