@@ -456,7 +456,7 @@ function runJob() {
             echoInfo "Running...$jobInQuestion"
             jobCreatesTestXmls=false
             if atLeastVersion 6; then
-                runGradle 17 19 'findbugsMain'
+                runGradle 17 19 'findbugsMain javaImportsVsWhitelist :checkJavadoc'
                 echoInfo "Exit code: $?"
             else
                 ANT_OPTS="$(getAntOptsBasic)"
