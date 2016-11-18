@@ -17,6 +17,8 @@ GRADLE_WRAPPER='./gradlew'
 GRADLE_TMP_BASE='/tmp/gradlehome'
 buildProperties="src/build/ant/build.properties"
 PARQUET='-Duse-parquet-storage=true'
+distRegex='^[a-zA-Z0-9.-]+$'
+
 declare -A myEnvVariables # fresh set of envVars to fill on a per job basis
 
 # util to get a green build name
@@ -401,6 +403,16 @@ function getGradleOptPlanName() {
     getAntOptPlanName
 }
 
+function getDistVersions() {
+    for ver in $(./gradlew -q versions | grep -P "^\t[a-z]+"); do
+        if [[ "$ver" =~ $distRegex ]]; then
+            echo $ver
+        else
+            die "Hadoop Distribution '$ver' does not match regex '$distRegex'"
+        fi
+    done
+}
+
 function runJob() {
     preTasks
     local jobArg=$1
@@ -440,14 +452,17 @@ function runJob() {
         # jobNames[compile]="$(getGB 'Compile Datameer Distributions')"
         'compile')
             echoInfo "Running...$jobInQuestion"
+            local distVers=$(getDistVersions)
             jobCreatesTestXmls=false
             if atLeastVersion 6; then
-                for ver in $(./gradlew versions | grep -P "^\t[a-z]+"); do
+                for ver in $distVers; do
                     runGradle 17 19 "compileIntegTestJava jobJar -DhadoopVersion=$ver"
                 done
             else
                 ANT_OPTS="$(getAntOptsBasic)"
-                runAnt 17 19 'clean-all it-jar job-jar'
+                for ver in $distVers; do
+                    runAnt 17 19 "clean-all it-jar job-jar -Dhadoop.dist=$ver"
+                done
             fi
             ;;
 
