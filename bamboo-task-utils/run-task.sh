@@ -291,8 +291,10 @@ function runAnt() {
     local target=$3
     if onBamboo; then
         echoInfo "Fix for BAM-55: adding tmp directory setting to all builds"
-        mkdir -v "$bamboo_build_working_directory/tmp"
-        ANT_OPTS="$ANT_OPTS -Djava.io.tmpdir=$bamboo_build_working_directory/tmp"
+        local buildTmpDir="$bamboo_build_working_directory/tmp"
+        rm -rf "$buildTmpDir"
+        mkdir -v "$buildTmpDir"
+        ANT_OPTS="$ANT_OPTS -Djava.io.tmpdir=$buildTmpDir"
         copyEc2Properties
         echoInfo "Adding plan name per default"
         ANT_OPTS="$ANT_OPTS $(getAntOptPlanName)"
@@ -312,8 +314,10 @@ function runGradle() {
     local target=$3
     if onBamboo; then
         echoInfo "Fix for BAM-55: adding tmp directory setting to all builds"
-        mkdir -pv "$bamboo_build_working_directory/tmp"
-        target="$target -Djava.io.tmpdir=$bamboo_build_working_directory/tmp"
+        local buildTmpDir="$bamboo_build_working_directory/tmp"
+        rm -rf "$buildTmpDir"
+        mkdir -v "$buildTmpDir"
+        target="$target -Djava.io.tmpdir=$buildTmpDir"
         echoInfo "Adding plan name per default"
         target="$target $(getGradleOptPlanName)"
         target="$target -PignoreTestFailures=true"
