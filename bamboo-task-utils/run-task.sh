@@ -48,6 +48,8 @@ jobNames[unitTests18]="$(getGB 'Unit Tests (JDK-1.8)')"
 jobNames[itTests18]="$(getGB 'Integration Tests (JDK-1.8)')"
 jobNames[localDB]="$(getGB 'Local Database Tests')"
 jobNames[remoteDB]="$(getGB 'Remote Database Tests')"
+jobNames[pluginUnitTests]="$(getGB 'Plugin Unit Tests')"
+jobNames[pluginIntegTests]="$(getGB 'Plugin Integ Tests')"
 # Info Builds
 jobNames[efwSparkClientFull]="$(getIB 'EFW Spark Client (full)')"
 jobNames[efwSparkClusterFull]="$(getIB 'EFW Spark Cluster (full)')"
@@ -502,6 +504,54 @@ function runJob() {
             else
                 ANT_OPTS="$(getAntOptsBasic 1024)"
                 runAnt 17 19 "clean-all download-ec2-static-property it"
+            fi
+            ;;
+
+        # jobNames[pluginUnitTests]="$(getGB 'Plugin Unit Tests')"
+        'pluginUnitTests')
+            local pluginsToRun="$(echo "${bamboo_pluginsToRun:-}" | tr ',' ' ' | tr ' ' '\n')"
+            if atLeastVersion 6; then
+                if [ -z "$pluginsToRun" ]; then
+                    runGradle 17 19 'pluginsTest'
+                else
+                    for plugin in $pluginsToRun; do
+                        runGradle 17 19 ":$plugin:test"
+                    done
+                fi
+            else
+                ANT_OPTS="$(getAntOptsBasic)"
+                if [ -z "$pluginsToRun" ]; then
+                    runAnt 17 19 "plugin-unit"
+                else
+                    runAnt 17 19 "job-jar unit-jar"
+                    for plugin in $pluginsToRun; do
+                        runAnt 17 19 "-f plugins/$plugin/build.xml jar unit-jar unit"
+                    done
+                fi
+            fi
+            ;;
+
+        # jobNames[itTests]="$(getGB 'Integration Tests')"
+        'pluginIntegTests')
+            local pluginsToRun="$(echo "${bamboo_pluginsToRun:-}" | tr ',' ' ' | tr ' ' '\n')"
+            if atLeastVersion 6; then
+                if [ -z "$pluginsToRun" ]; then
+                    runGradle 17 19 'pluginsIntegTest'
+                else
+                    for plugin in $pluginsToRun; do
+                        runGradle 17 19 ":$plugin:integTest"
+                    done
+                fi
+            else
+                ANT_OPTS="$(getAntOptsBasic 1024)"
+                if [ -z "$pluginsToRun" ]; then
+                    runAnt 17 19 "plugin-it"
+                else
+                    runAnt 17 19 "it-jar plugin-zip"
+                    for plugin in $pluginsToRun; do
+                        runAnt 17 19 "-f plugins/$plugin/build.xml jar it-jar it"
+                    done
+                fi
             fi
             ;;
 
