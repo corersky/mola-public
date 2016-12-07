@@ -462,7 +462,7 @@ function runJob() {
             jobCreatesTestXmls=false
             if atLeastVersion 6; then
                 for ver in $distVers; do
-                    runGradle 17 19 "compileIntegTestJava jobJar -DhadoopVersion=$ver"
+                    runGradle 17 19 "compileIntegTestJava jobJar -PhadoopVersion=$ver"
                 done
             else
                 ANT_OPTS="$(getAntOptsBasic)"
