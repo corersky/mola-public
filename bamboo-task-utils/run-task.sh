@@ -173,11 +173,7 @@ function listJobsAndDryRun() {
 function atLeastVersion() {
     local atLeastRaw=$1
     local atLeast=$(echo $atLeastRaw | sed 's/\(\.0\)*$//')
-    echoDebug "At least version: '$atLeast' (normalised from $atLeastRaw)"
-    [ ! -e $buildProperties ] && die "Cannot find file '$buildProperties'"
-    local versionRaw="$(grep -oE "^version=.*" $buildProperties | cut -f2 -d'=')"
-    local version=$(echo $versionRaw | sed 's/\(\.0\)*$//')
-    echoInfo "Found DAP version: '$version' (normalised from $versionRaw). Comparing to version $atLeast"
+    echoDebug "At least version: '$atLeast' (normalised from $atLeastRaw). Comparing to DAP version: '$version' (normalised from $versionRaw)."
     local latestVersion=$(echo -e "$atLeast\n$version" | sort -t '.' -k 1,1 -k 2,2 -k 3,3 -k 4,4 -g | tail -n 1)
     echoDebug "Latest version determined as: '$latestVersion'"
     [ "$latestVersion" == "$version" ]
@@ -420,6 +416,7 @@ function getDistVersions() {
 }
 
 function runJob() {
+    checkRetired
     preTasks
     local jobArg=$1
     # the following two lines are necessary because, on branch runs, the bamboo_buildPlanName
@@ -907,6 +904,41 @@ function finish() {
     # [ $? -eq 0 ] && echo "Done!"
 }
 
+function getVersionFromDapProperties() {
+    [ ! -e $buildProperties ] && die "Cannot find file '$buildProperties'"
+    versionRaw="$(grep -oE "^version=.*" $buildProperties | cut -f2 -d'=')"
+    version=$(echo $versionRaw | sed 's/\(\.0\)*$//')
+    echoInfo "Found DAP version: '$version' (normalised from $versionRaw)."
+}
+
+function checkRetired() {
+    getVersionFromDapProperties
+    local retiredVersions="5\.10.* 6\.0.*"
+    local runRetiredRegardless=${bamboo_runRetired:-}
+    echoInfo "Checking '$version' against retired versions ($retiredVersions)"
+    local isRetired=
+    local IFS=' '
+    for retired in $(echo $retiredVersions); do
+        if [[ "$version" =~ ^$retired$ ]]; then
+            isRetired=true
+        fi
+    done
+    if [ -n "$isRetired" ]; then
+        local msg="Version '$version' is retired and should not run."
+        if [ -n "$runRetiredRegardless" ]; then
+            echoInfo "$msg"
+            echoInfo "...however, the 'runRetiredRegardless' option has been passed. Continuing..."
+        else
+            if [ $DRYRUN  -eq 1 ]; then
+                echoInfo "DRYRUN: $msg"
+            else
+                die "$msg"
+            fi
+        fi
+    fi
+}
+
+
 ###############################################
 # Program
 ###############################################
@@ -944,10 +976,12 @@ do
 done
 
 
-# atLeastVersion 6 && echo "6 yes" || echo "6 no"
-# atLeastVersion 6.2 && echo "6.2 yes" || echo "6.2 no"
-# atLeastVersion 6.11 && echo "6.11 yes" || echo "6.11 no"
-# atLeastVersion 6.2.0 && echo "6.2.0 yes" || echo "6.2.0 no"
-# atLeastVersion 6.1.9 && echo "6.1.9 yes" || echo "6.1.9 no"
-
+#atLeastVersion 6 && echo "6 yes" || echo "6 no"
+#atLeastVersion 6.3 && echo "6.3 yes" || echo "6.3 no"
+#atLeastVersion 6.3.1 && echo "6.3.1 yes" || echo "6.3.1 no"
+#atLeastVersion 6.2 && echo "6.2 yes" || echo "6.2 no"
+#atLeastVersion 6.11 && echo "6.11 yes" || echo "6.11 no"
+#atLeastVersion 6.2.0 && echo "6.2.0 yes" || echo "6.2.0 no"
+#atLeastVersion 6.1.9 && echo "6.1.9 yes" || echo "6.1.9 no"
+#exit
 runJob "${JOB_ARG:-}"
