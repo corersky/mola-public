@@ -585,7 +585,8 @@ function runJob() {
         'localDB')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
-                runGradle 17 19 'dap-common:integTest -Dtest.groups=db_netezza'
+                # with issue DAP-27052 we convert the tests runs build completely to gradle and therefore some of the system properties to parameters
+                runGradle 17 19 'dap-common:integTest -Dtest.groups=db_netezza -PtestGroups=db_netezza'
             else
                 ANT_OPTS="$(getAntOptsBasic 1024)"
                 runAnt 17 19 "clean-all it-db-netezza"
