@@ -556,7 +556,7 @@ function runJob() {
         'itTestsLong')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
-                runGradle 17 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=long'
+                runGradle 17 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=long -PtestGroups=long'
             else
                 ANT_OPTS="$(getAntOptsBasic)"
                 runAnt 17 19 "clean-all download-ec2-static-property it-long"
@@ -611,7 +611,7 @@ function runJob() {
         'embeddedCluster')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
-                runGradle 17 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=cluster'
+                runGradle 17 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=cluster -PtestGroups=cluster'
             else
                 ANT_OPTS="$(getAntOptsBasic 1024)"
                 ANT_OPTS="$ANT_OPTS -Dtest.groups=cluster"
