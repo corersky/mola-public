@@ -626,7 +626,7 @@ function runJob() {
                 notImpemented
             else
                 ANT_OPTS="$(getAntOptsEfw Local)"
-                runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
+                runAnt 17 19 "clean-all download-ec2-static-property it-ec2-managed"
             fi
             ;;
 
@@ -637,7 +637,7 @@ function runJob() {
                 notImpemented
             else
                 ANT_OPTS="$(getAntOptsEfw SmallJob)"
-                runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
+                runAnt 17 19 "clean-all download-ec2-static-property it-ec2-managed"
             fi
             ;;
 
@@ -648,7 +648,7 @@ function runJob() {
                 notImpemented
             else
                 ANT_OPTS="$(getAntOptsEfw MapReduce)"
-                runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
+                runAnt 17 19 "clean-all download-ec2-static-property it-ec2-managed"
             fi
             ;;
 
@@ -660,7 +660,7 @@ function runJob() {
             else
                 ANT_OPTS=$(getAntOptsEfw Smart)
                 ANT_OPTS="$ANT_OPTS -DinstanceType=m3.xlarge"
-                runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
+                runAnt 17 19 "clean-all download-ec2-static-property it-ec2-managed"
             fi
             ;;
 
@@ -672,7 +672,7 @@ function runJob() {
             else
                 ANT_OPTS=$(getAntOptsEfw SparkClient)
                 ANT_OPTS="$ANT_OPTS -DinstanceType=m3.xlarge"
-                runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
+                runAnt 17 19 "clean-all download-ec2-static-property it-ec2-managed"
             fi
             ;;
 
@@ -684,7 +684,7 @@ function runJob() {
             else
                 ANT_OPTS=$(getAntOptsEfw SparkCluster)
                 ANT_OPTS="$ANT_OPTS -DinstanceType=m3.xlarge"
-                runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
+                runAnt 17 19 "clean-all download-ec2-static-property it-ec2-managed"
             fi
             ;;
 
@@ -696,7 +696,7 @@ function runJob() {
             else
                 ANT_OPTS=$(getAntOptsEfw SparkSX)
                 ANT_OPTS="$ANT_OPTS -DinstanceType=m3.xlarge"
-                runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
+                runAnt 17 19 "clean-all download-ec2-static-property it-ec2-managed"
             fi
             ;;
 
@@ -707,7 +707,7 @@ function runJob() {
                 notImpemented
             else
                 ANT_OPTS=$(getAntOptsEfw Tez)
-                runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
+                runAnt 17 19 "clean-all download-ec2-static-property it-ec2-managed"
             fi
             ;;
 
@@ -754,7 +754,7 @@ function runJob() {
             else
                 ANT_OPTS="$(getAntOptsEfw SparkClient cluster,dist_sanity)"
                 ANT_OPTS="$ANT_OPTS -DinstanceType=m3.xlarge"
-                runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
+                runAnt 17 19 "clean-all download-ec2-static-property it-ec2-managed"
             fi
             ;;
 
@@ -767,7 +767,7 @@ function runJob() {
                 ANT_OPTS="$(getAntOptsEfw SparkCluster cluster,dist_sanity)"
                 ANT_OPTS="$ANT_OPTS -DinstanceType=m3.xlarge"
                 ANT_OPTS="$ANT_OPTS -Dspark.thrift=true"
-                runAnt 17 19 "clean-all download-ec2-static-property unit it-ec2-managed"
+                runAnt 17 19 "clean-all download-ec2-static-property it-ec2-managed"
             fi
             ;;
 
