@@ -568,14 +568,14 @@ function runJob() {
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
                 myEnvVariables[CHROME_BIN]="/opt/google/chrome/google-chrome"
-                myEnvVariables[FIREFOX_BIN]="/opt/firefox_30.0_js/firefox"
+                myEnvVariables[FIREFOX_BIN]="/opt/firefox_50.1/firefox"
                 myEnvVariables[DISPLAY]="localhost:0.0"
                 exec cd modules/dap-conductor
                 runNpm 'test'
             else
                 ANT_OPTS="$(getAntOptsBasic)"
                 myEnvVariables[CHROME_BIN]="/opt/google/chrome/google-chrome"
-                myEnvVariables[FIREFOX_BIN]="/opt/firefox_30.0_js/firefox"
+                myEnvVariables[FIREFOX_BIN]="/opt/firefox_50.1/firefox"
                 myEnvVariables[DISPLAY]="localhost:0.0"
                 runAnt 17 19 "clean-all specs"
             fi
