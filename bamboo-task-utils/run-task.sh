@@ -497,7 +497,10 @@ function runJob() {
         'itTests')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
-                runGradle 17 19 'downloadEc2StaticPropertyEU integTest'
+                if [[ 'orca/DAP-30603' == "$bamboo_repository_branch_name" ]]; then
+                    runGradle 17 19 'downloadEc2StaticPropertyEU dap-sdk:integTest dap-common:integTest pluginsIntegTest'
+                else
+                    runGradle 17 19 'downloadEc2StaticPropertyEU integTest'
             else
                 ANT_OPTS="$(getAntOptsBasic 1024)"
                 runAnt 17 19 "clean-all download-ec2-static-property it"
@@ -556,7 +559,10 @@ function runJob() {
         'itTestsLong')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
-                runGradle 17 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=long -PtestGroups=long'
+                if [[ 'orca/DAP-30603' == "$bamboo_repository_branch_name" ]]; then
+                    runGradle 17 19 'downloadEc2StaticPropertyEU dap-conductor:integTest'
+                else
+                    runGradle 17 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=long -PtestGroups=long'
             else
                 ANT_OPTS="$(getAntOptsBasic)"
                 runAnt 17 19 "clean-all download-ec2-static-property it-long"
