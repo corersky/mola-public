@@ -374,7 +374,7 @@ function getAntOptsBasic() {
 function getAntOptsEfwLocal() {
     local ANT_OPTS=''
     ANT_OPTS="$ANT_OPTS -Dhalt.on.failure=false -DshowOutput=false"
-    ANT_OPTS="$ANT_OPTS -Xmx2048m"
+    ANT_OPTS="$ANT_OPTS -Xmx2048m -XX:MaxPermSize=256m"
     ANT_OPTS="$ANT_OPTS -Dtest.groups=${2:-execution_framework}"
     ANT_OPTS="$ANT_OPTS -Dexecution-framework=$1"
     echo "$ANT_OPTS"
