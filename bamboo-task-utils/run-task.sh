@@ -501,6 +501,7 @@ function runJob() {
                     runGradle 17 19 'downloadEc2StaticPropertyEU dap-sdk:integTest dap-common:integTest pluginsIntegTest'
                 else
                     runGradle 17 19 'downloadEc2StaticPropertyEU integTest'
+                fi
             else
                 ANT_OPTS="$(getAntOptsBasic 1024)"
                 runAnt 17 19 "clean-all download-ec2-static-property it"
@@ -563,6 +564,7 @@ function runJob() {
                     runGradle 17 19 'downloadEc2StaticPropertyEU dap-conductor:integTest'
                 else
                     runGradle 17 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=long -PtestGroups=long'
+                fi
             else
                 ANT_OPTS="$(getAntOptsBasic)"
                 runAnt 17 19 "clean-all download-ec2-static-property it-long"
