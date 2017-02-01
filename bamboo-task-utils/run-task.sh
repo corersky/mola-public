@@ -497,7 +497,7 @@ function runJob() {
         'itTests')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
-                if [[ 'orca/DAP-30603' == "$bamboo_repository_branch_name" ]]; then
+                if [[ 'orca/DAP-30603_1' == "$bamboo_repository_branch_name" ]]; then
                     runGradle 17 19 'downloadEc2StaticPropertyEU dap-sdk:integTest dap-common:integTest pluginsIntegTest'
                 else
                     runGradle 17 19 'downloadEc2StaticPropertyEU integTest'
@@ -560,7 +560,7 @@ function runJob() {
         'itTestsLong')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
-                if [[ 'orca/DAP-30603' == "$bamboo_repository_branch_name" ]]; then
+                if [[ 'orca/DAP-30603_1' == "$bamboo_repository_branch_name" ]]; then
                     runGradle 17 19 'downloadEc2StaticPropertyEU dap-conductor:integTest'
                 else
                     runGradle 17 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=long -PtestGroups=long'
@@ -797,7 +797,7 @@ function runJob() {
         'itTestsLong18')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
-                if [[ 'orca/DAP-30603' == "$bamboo_repository_branch_name" ]]; then
+                if [[ 'orca/DAP-30603_1' == "$bamboo_repository_branch_name" ]]; then
                     runGradle 18 19 'downloadEc2StaticPropertyEU dap-conductor:integTest'
                 else
                     runGradle 18 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=long -PtestGroups=long'
