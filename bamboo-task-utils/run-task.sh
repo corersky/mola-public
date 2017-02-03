@@ -497,11 +497,7 @@ function runJob() {
         'itTests')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
-                if [[ 'orca/DAP-30603_1' == "$bamboo_repository_branch_name" ]]; then
-                    runGradle 17 19 'downloadEc2StaticPropertyEU dap-sdk:integTest dap-common:integTest pluginsIntegTest'
-                else
-                    runGradle 17 19 'downloadEc2StaticPropertyEU integTest'
-                fi
+                runGradle 17 19 'downloadEc2StaticPropertyEU dap-sdk:integTest dap-common:integTest pluginsIntegTest'
             else
                 ANT_OPTS="$(getAntOptsBasic 1024)"
                 runAnt 17 19 "clean-all download-ec2-static-property it"
@@ -560,11 +556,7 @@ function runJob() {
         'itTestsLong')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
-                if [[ 'orca/DAP-30603_1' == "$bamboo_repository_branch_name" ]]; then
-                    runGradle 17 19 'downloadEc2StaticPropertyEU dap-conductor:integTest'
-                else
-                    runGradle 17 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=long -PtestGroups=long'
-                fi
+                runGradle 17 19 'downloadEc2StaticPropertyEU dap-conductor:integTest'
             else
                 ANT_OPTS="$(getAntOptsBasic)"
                 runAnt 17 19 "clean-all download-ec2-static-property it-long"
@@ -797,11 +789,7 @@ function runJob() {
         'itTestsLong18')
             echoInfo "Running...$jobInQuestion"
             if atLeastVersion 6; then
-                if [[ 'orca/DAP-30603_1' == "$bamboo_repository_branch_name" ]]; then
-                    runGradle 18 19 'downloadEc2StaticPropertyEU dap-conductor:integTest'
-                else
-                    runGradle 18 19 'downloadEc2StaticPropertyEU integTest -Dtest.groups=long -PtestGroups=long'
-                fi
+                runGradle 18 19 'downloadEc2StaticPropertyEU dap-conductor:integTest'
             else
                 ANT_OPTS="$(getAntOptsBasic)"
                 runAnt 18 19 "clean-all download-ec2-static-property it-long"
