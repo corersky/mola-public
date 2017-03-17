@@ -570,7 +570,7 @@ function runJob() {
                 myEnvVariables[CHROME_BIN]="/opt/google/chrome/google-chrome"
                 myEnvVariables[FIREFOX_BIN]="/opt/firefox_50.1/firefox"
                 myEnvVariables[DISPLAY]="localhost:0.0"
-                myEnvVariables[JEST_JUNIT_OUTPUT]="./build/ui-specs-results/test_results.xml"
+                myEnvVariables[JEST_JUNIT_OUTPUT]="./build/ui-specs-results/test-results.xml"
                 exec cd modules/dap-conductor
                 runNpm 'test'
             else
