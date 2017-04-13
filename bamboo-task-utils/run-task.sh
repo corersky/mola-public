@@ -8,8 +8,8 @@ IFS=$'\n\t'
 # Defaults
 ####################################################
 DU_LOG="/var/tmp/du.log"
-BAMBOO_EC2_PROPS='/home/bamboo/.ec2/ec2.properties'
-RELEASES_ARCHIVE_DIR='/home/bamboo/ak_releases'
+BAMBOO_EC2_PROPS='/home/bamboo2/.ec2/ec2.properties'
+RELEASES_ARCHIVE_DIR='/home/bamboo2/ak_releases'
 DOWNLOAD_USER_EC2_PROPS='/home/download/ec2/ec2.properties.bamboo'
 BAMBOO_JDK_8_STRING='JDK-1.8'
 BAMBOO_JDK_DEFAULT='JDK-1.7'
