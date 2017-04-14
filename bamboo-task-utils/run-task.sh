@@ -9,10 +9,12 @@ IFS=$'\n\t'
 ####################################################
 DU_LOG="/var/tmp/du-bamboo.log"
 BAMBOO_EC2_PROPS='/home/bamboo/.ec2/ec2.properties'
+BAMBOO_SSH_KEY='/home/bamboo/.ssh/id_rsa'
 RELEASES_ARCHIVE_DIR='/home/bamboo/ak_releases'
 if [ -d /home/bamboo2 ]; then
     BAMBOO_EC2_PROPS='/home/bamboo2/.ec2/ec2.properties'
     RELEASES_ARCHIVE_DIR='/home/bamboo2/ak_releases'
+    BAMBOO_SSH_KEY='/home/bamboo2/.ssh/id_rsa'
 fi
 DOWNLOAD_USER_EC2_PROPS='/home/download/ec2/ec2.properties.bamboo'
 BAMBOO_JDK_8_STRING='JDK-1.8'
@@ -152,7 +154,7 @@ function echoDebug() {
 
 function copyEc2Properties() {
     echoInfo "Downloading ec2.properties for CI Server..."
-    scp download@build.datameer.com:$DOWNLOAD_USER_EC2_PROPS "$bamboo_build_working_directory/modules/dap-common/src/it/resources/ec2.properties"
+    scp -i $BAMBOO_SSH_KEY download@build.datameer.com:$DOWNLOAD_USER_EC2_PROPS "$bamboo_build_working_directory/modules/dap-common/src/it/resources/ec2.properties"
     # if [ -e "$BAMBOO_EC2_PROPS" ]; then
     #     exec cp "$BAMBOO_EC2_PROPS" "$bamboo_build_working_directory/modules/dap-common/src/it/resources/ec2.properties"
     # fi
