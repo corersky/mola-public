@@ -226,7 +226,7 @@ function checkAnt() {
 }
 
 function onBamboo() {
-    [[ "$USER" == "bamboo" ]]
+    [[ "$USER" =~ "^(bamboo)(2)*$" ]]
 }
 
 function setJdk() {
