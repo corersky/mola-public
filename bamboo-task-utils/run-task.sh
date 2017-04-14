@@ -7,7 +7,7 @@ IFS=$'\n\t'
 ####################################################
 # Defaults
 ####################################################
-DU_LOG="/var/tmp/du.log"
+DU_LOG="/var/tmp/du-bamboo.log"
 BAMBOO_EC2_PROPS='/home/bamboo/.ec2/ec2.properties'
 RELEASES_ARCHIVE_DIR='/home/bamboo/ak_releases'
 if [ -d /home/bamboo2 ]; then
