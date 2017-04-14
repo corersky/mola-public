@@ -226,7 +226,7 @@ function checkAnt() {
 }
 
 function onBamboo() {
-    [[ "$USERTMP" == "bamboo" ]] || [[ "$USERTMP" == "bamboo2" ]]
+    [[ "$USER" == "bamboo" ]] || [[ "$USER" == "bamboo2" ]]
 }
 
 function setJdk() {
