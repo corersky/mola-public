@@ -3,7 +3,10 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-gitRepoReferenceBase='/home/bamboo2/.temp-git-repo-reference'
+gitRepoReferenceBase='/home/bamboo/.temp-git-repo-reference'
+if [ -d /home/bamboo2 ]; then
+	gitRepoReferenceBase='/home/bamboo2/.temp-git-repo-reference'
+fi
 buildSubString="xml-data/build-dir"
 
 logInfo() {
