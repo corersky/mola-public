@@ -330,6 +330,10 @@ function runGradle() {
     setEnvVars
     setJdk $jdkVersion
     setAnt $antVersion
+    echoInfo "Running id..."
+    exec "id"
+    echoInfo "Running env..."
+    exec "env"
     cmd="$GRADLE_WRAPPER --version"
     echoInfo "Running '--version'... $cmd"
     exec $cmd
