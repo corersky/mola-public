@@ -321,6 +321,9 @@ function runGradle() {
         local buildTmpDir="$bamboo_build_working_directory/tmp"
         rm -rf "$buildTmpDir"
         mkdir -v "$buildTmpDir"
+        echoInfo "Fix for BUILD-230: changing /home/bamboo -> /home/bamboo2"
+        export JAVA_OPTS=$(echo $JAVA_OPTS | sed 's/\/home\/bamboo\//\/home\/bamboo2\//g')
+        echoInfo "JAVA_OPTS now set to --> $JAVA_OPTS"
         target="$target -Djava.io.tmpdir=$buildTmpDir"
         echoInfo "Adding plan name per default"
         target="$target $(getGradleOptPlanName)"
