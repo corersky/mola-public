@@ -228,7 +228,7 @@ function checkAnt() {
 }
 
 function onBamboo() {
-    [[ "$USER" == "bamboo" ]] || [[ "$USER" == "bamboo2" ]]
+    [[ "$(whoami)" == "bamboo" ]] || [[ "$(whoami)" == "bamboo2" ]]
 }
 
 function setJdk() {
