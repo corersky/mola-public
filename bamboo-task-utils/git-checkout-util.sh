@@ -8,6 +8,7 @@ if [ -d /home/bamboo2 ]; then
 	gitRepoReferenceBase='/home/bamboo2/.temp-git-repo-reference'
 fi
 buildSubString="xml-data/build-dir"
+mountedRepo=/dap-repo/dap
 
 logInfo() {
 	echo "LOG-INFO: $@"
@@ -27,8 +28,16 @@ setupGitRepositoryReference() {
 		if [ ! -d "$gitRefLocation" ]; then
 			logInfo "First time checkout of reference repository '$gitRefLocation'."
 			mkdir -p $gitRefLocation
-			if ! git clone "$bamboo_planRepository_repositoryUrl" $gitRefLocation; then
-				rm -rf "$gitRefLocation"
+			# new /dap-repo mount on docker clients...
+			if [ -d $mountedRepo ]; then
+				cp -r $mountedRepo/. $gitRefLocation
+				logInfo "Found dap-repo mount '$mountedRepo'. Copied to '$gitRefLocation' and now updating..."
+				#git -C $gitRefLocation pull --rebase # option '-C' only available in > v1.8.5
+				git --git-dir="$gitRefLocation/.git" --work-tree="$gitRefLocation" fetch
+			else
+				if ! git clone "$bamboo_planRepository_repositoryUrl" $gitRefLocation; then
+					rm -rf "$gitRefLocation"
+				fi
 			fi
 		else
 			logInfo "Found git reference repository '$gitRefLocation'. Updating..."
