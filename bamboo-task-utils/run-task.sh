@@ -231,6 +231,10 @@ function onBamboo() {
     [[ "$(whoami)" == "bamboo" ]] || [[ "$(whoami)" == "bamboo2" ]]
 }
 
+function inDockerContainer() {
+    [[ "$container" == "docker"  ]]
+}
+
 function setJdk() {
     if onBamboo; then
         local jdkDir
@@ -917,6 +921,11 @@ function setDryRun() { DRYRUN=1; }
 function setVerbose() { VERBOSE=1; }
 
 function finish() {
+    # following used for our docker-based js-specs agents.
+    if inDockerContainer; then
+        echoInfo "Fixed during BUILD-234: Killing the Xvfb processes started by gulp."
+        pkill -xe Xvfb || true
+    fi
     # echoInfo "In 'finish' function, triggered on signal EXIT."
     # cleanup gradle temp directory if created.
     if [[ "${gradleTmpDir:-}" == $GRADLE_TMP_BASE/* ]]; then
