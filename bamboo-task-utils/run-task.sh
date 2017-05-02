@@ -232,7 +232,7 @@ function onBamboo() {
 }
 
 function inDockerContainer() {
-    [[ "$container" == "docker"  ]]
+    [[ "${container:-}" == "docker"  ]]
 }
 
 function setJdk() {
