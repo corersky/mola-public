@@ -29,15 +29,8 @@ setupGitRepositoryReference() {
 			logInfo "First time checkout of reference repository '$gitRefLocation'."
 			mkdir -p $gitRefLocation
 			# new /dap-repo mount on docker clients...
-			if [ -d $mountedRepo ]; then
-				cp -r $mountedRepo/. $gitRefLocation
-				logInfo "Found dap-repo mount '$mountedRepo'. Copied to '$gitRefLocation' and now updating..."
-				#git -C $gitRefLocation pull --rebase # option '-C' only available in > v1.8.5
-				git --git-dir="$gitRefLocation/.git" --work-tree="$gitRefLocation" fetch
-			else
-				if ! git clone "$bamboo_planRepository_repositoryUrl" $gitRefLocation; then
-					rm -rf "$gitRefLocation"
-				fi
+			if ! git clone "$bamboo_planRepository_repositoryUrl" $gitRefLocation; then
+				rm -rf "$gitRefLocation"
 			fi
 		else
 			logInfo "Found git reference repository '$gitRefLocation'. Updating..."
@@ -58,14 +51,21 @@ if [ -n "$bamboo_build_working_directory" ]; then
 	logInfo "Listing bamboo_build_working_directory AFTER..."
 	ls -al
 	# checkout and branch handling...
-	setupGitRepositoryReference;
-	if [ -n "$gitRefLocation" ]; then
-		logInfo "Checking out using reference repo '$gitRefLocation'."
-		git clone --reference $gitRefLocation "$bamboo_planRepository_repositoryUrl" . && git repack -a -d && find $(find . -name .git) -name alternates | xargs rm
-		git checkout $bamboo_planRepository_revision
+	if [ -d $mountedRepo ]; then
+		cp -r $mountedRepo/. $bamboo_build_working_directory
+		logInfo "Found dap-repo mount '$mountedRepo'. Copied to '$bamboo_build_working_directory' and now updating..."
+		#git -C $gitRefLocation pull --rebase # option '-C' only available in > v1.8.5
+		git --git-dir="$bamboo_build_working_directory/.git" --work-tree="$bamboo_build_working_directory" fetch
 	else
-		logInfo "Checking out WITHOUT using reference repo."
-		git clone "$bamboo_planRepository_repositoryUrl" .
+		setupGitRepositoryReference;
+		if [ -n "$gitRefLocation" ]; then
+			logInfo "Checking out using reference repo '$gitRefLocation'."
+			cp -r $gitRefLocation/. $bamboo_build_working_directory
+			git --git-dir="$bamboo_build_working_directory/.git" --work-tree="$bamboo_build_working_directory" fetch
+		else
+			logInfo "Checking out WITHOUT using reference repo."
+			git clone "$bamboo_planRepository_repositoryUrl" .
+		fi
 	fi
 	logInfo "Checking out '$bamboo_planRepository_branchName' with rev '$bamboo_planRepository_revision'"
 	git checkout $bamboo_planRepository_revision
