@@ -14,12 +14,12 @@
     requirements: /opt/clusterdock/requirements.txt
 
 - name: setting clusterdock run scripts
-  file: path=/opt/clusterdock state=directory
+  file: path=/opt/clusterdock-scripts state=directory
 
 - name: uploading scripts
   copy: 
     src: "{{item}}"
-    dest: /opt/clusterdock
+    dest: /opt/clusterdock-scripts
     mode: 755
   with_fileglob:
     - "*"
