@@ -16,5 +16,14 @@
   copy: 
     src: "{{item}}"
     dest: /opt/ambari-setup
+    mode: 755
   with_fileglob:
-    - "*"
+    - "*sh"
+
+- name: uploading jsons
+  copy: 
+    src: "{{item}}"
+    dest: /opt/ambari-setup
+    mode: 644
+  with_fileglob:
+    - "*json"
