@@ -1,0 +1,20 @@
+---
+
+- name: setting docker-hdp
+  file: path=/opt/docker-hdp state=directory
+
+- name: clone directory
+  git:
+    repo: https://github.com/randerzander/docker-hdp.git
+    dest: /opt/docker-hdp
+    clone: yes
+
+- name: setting ambari-setup
+  file: path=/opt/ambari-setup state=directory
+
+- name: uploading scripts
+  copy: 
+    src: "{{item}}"
+    dest: /opt/ambari-setup
+  with_fileglob:
+    - "*"

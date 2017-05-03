@@ -1,0 +1,14 @@
+---
+
+- name: setting clusterdock
+  file: path=/opt/clusterdock state=directory
+
+- name: clone directory
+  git:
+    repo: https://github.com/cloudera/clusterdock.git
+    dest: /opt/clusterdock
+    clone: yes
+
+- name: clusterdock requirements
+  pip:
+    requirements: /opt/clusterdock/requirements.txt

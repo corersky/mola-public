@@ -1,0 +1,32 @@
+---
+
+- apt_key: 
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+#- apt_repository:
+#    repo: https://download.docker.com/linux/ubuntu trusty stable
+#    state: present
+
+- name: install packages
+  apt: name={{item}} state=present
+  with_items:
+    - screen
+    - python
+    - python-dev
+    - python-pip
+    - python3
+    - python3-pip
+    - git
+    - zip
+    - dos2unix
+    - iptables-persistent
+    - nginx
+#    - docker.io
+    - docker-ce
+    - lvm2
+    - build-essential 
+    - libssl-dev 
+    - libffi-dev  
+    - libxml2-dev 
+    - libxmlsec1-dev

@@ -1,0 +1,75 @@
+{% if openvpn_local is defined -%}
+local {{ openvpn_local }}
+{% else -%}
+;local a.b.c.d {% endif %}
+
+port {{ openvpn_port }}
+proto {{ openvpn_proto }}
+dev {{ openvpn_dev }}
+
+ca {{openvpn_keydir}}/ca.crt
+cert {{openvpn_keydir}}/server.crt
+key {{openvpn_keydir}}/server.key  # This file should be kept secret
+dh {{openvpn_keydir}}/dh{{openvpn_key_size}}.pem
+
+{% if openvpn_client_config_dir is defined -%}
+client-config-dir {{ openvpn_client_config_dir }}
+{% endif %}
+{% if openvpn_topology is defined -%}
+topology {{ openvpn_topology }}
+{% endif %}
+{% if openvpn_server %}
+server {{ openvpn_server }}
+{% else %}
+;server 10.8.0.0
+{% endif %}
+
+ifconfig-pool-persist {{openvpn_ifconfig_pool_persist}}
+keepalive {{ openvpn_keepalive }}
+
+{% if openvpn_comp_lzo -%}
+comp-lzo
+{% else -%}
+;comp-lzo
+{% endif %}
+
+persist-key
+persist-tun
+
+status {{openvpn_status}}
+;log         openvpn.log
+log-append  {{openvpn_log}}
+verb {{openvpn_verb}}
+
+max-clients {{openvpn_max_clients}}
+{% if openvpn_user -%}
+user {{openvpn_user}}
+{% else -%}
+;user nobody
+{% endif %}
+{% if openvpn_group -%}
+group {{openvpn_group}}
+{% else -%}
+group nogroup
+{% endif %}
+{% if openvpn_client_to_client %}
+client-to-client
+{% endif %}
+{% if openvpn_use_pam %}
+client-cert-not-required
+plugin {{openvpn_use_pam_plugin|default(openvpn_use_pam_plugin_distribution)}} openvpn
+{% endif %}
+{% if openvpn_use_ldap %}
+plugin {{ openvpn_use_ldap_plugin | default(openvpn_use_ldap_plugin_distribution) }} "/etc/openvpn/auth-ldap.conf"
+{% endif %}
+{% for option in openvpn_server_options %}
+{{option}}
+{% endfor %}
+{% if openvpn_clients_revoke|length > 0  or crl_pem_file.stat.exists %}
+crl-verify {{openvpn_keydir}}/crl.pem
+{% endif %}
+
+;push "redirect-gateway def1 bypass-dhcp"
+push "redirect-gateway autolocal"
+push "dhcp-option DNS 8.8.8.8"
+push "dhcp-option DNS 8.8.4.4"

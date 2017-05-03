@@ -1,0 +1,57 @@
+#!/bin/bash
+
+[ $# -lt 1 ] && echo "Usage: $0 <CLIENT>"
+
+echo "Creating .ovpn config file for OpenVPN."
+sed "s/remote commserv40045069 1194/remote {{ansible_host}} 1194/g" keys/openvpn_clients.ovpn > keys/tmp.ovpn
+grep -v ca.crt keys/tmp.ovpn > keys/tmp2.ovpn
+grep -v .crt keys/tmp2.ovpn > keys/tmp3.ovpn
+grep -v .key keys/tmp3.ovpn > keys/$1-windows.ovpn
+
+echo >> keys/$1-windows.ovpn
+echo "<ca>" >> keys/$1-windows.ovpn
+cat keys/ca.crt >> keys/$1-windows.ovpn
+echo "</ca>" >> keys/$1-windows.ovpn
+
+echo "<cert>" >> keys/$1-windows.ovpn
+cat keys/$1.crt >> keys/$1-windows.ovpn
+echo "</cert>" >> keys/$1-windows.ovpn
+
+echo "<key>" >> keys/$1-windows.ovpn
+cat keys/$1.key >> keys/$1-windows.ovpn
+echo "</key>" >> keys/$1-windows.ovpn
+
+cat keys/$1-windows.ovpn | unix2dos > keys/tmp4.ovpn
+cp -f keys/tmp4.ovpn keys/$1-windows.ovpn
+rm keys/tmp*.ovpn
+
+echo "Done."
+echo
+
+sed "s/remote commserv40045069 1194/remote {{ansible_host}} 1194/g" keys/openvpn_clients.ovpn > keys/tmp.ovpn
+sed "s/cert openvpn_clients.crt/cert $1.crt/g" keys/tmp.ovpn > keys/tmp2.ovpn
+sed "s/key openvpn_clients.key/key $1.key/g" keys/tmp2.ovpn > keys/$1-linux.ovpn
+rm keys/tmp*.ovpn
+
+echo "Creating keys/$1.tgz config archive for Linux."
+tar -czvf keys/$1-linux.tgz keys/$1-linux.ovpn keys/$1.crt keys/$1.key keys/ca.crt
+echo "Done."
+echo
+
+echo "Creating keys/$1.zip config archive for Windows."
+zip keys/$1-windows keys/$1-windows.ovpn
+echo "Done."
+echo
+
+MD5=`echo $1 | md5sum | awk '{print $1}'`
+
+echo "Copying config files to HTTP root."
+rm {{nginx_html_root}}/$MD5.*
+cp -vf keys/$1-linux.tgz {{nginx_html_root}}/$MD5.tgz
+cp -vf keys/$1-windows.zip {{nginx_html_root}}/$MD5.zip
+echo
+
+echo "You can download your config files and certs from:"
+echo "-> TAR GZ linux config archive: http://{{ansible_host}}/$MD5.tgz"
+echo "-> ZIP windows config archive:  http://{{ansible_host}}/$MD5.zip"
+echo

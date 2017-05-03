@@ -1,0 +1,27 @@
+{%- set client=item -%}
+client
+dev {{ openvpn_dev }}
+proto {{ openvpn_proto }}
+remote {{openvpn_host}} {{openvpn_port}}
+resolv-retry {{ openvpn_resolv_retry }}
+nobind
+persist-key
+persist-tun
+ca ca.crt
+cert {{client}}.crt
+key {{client}}.key
+ns-cert-type server
+mute-replay-warnings
+
+{% if openvpn_comp_lzo -%}
+comp-lzo
+{% else -%}
+;comp-lzo
+{% endif %}
+verb {{openvpn_verb}}
+{% if openvpn_use_pam or openvpn_use_ldap %}
+auth-user-pass
+{% endif %}
+{% for option in openvpn_client_options %}
+{{option}}
+{% endfor %}
