@@ -4,7 +4,8 @@
 ## Ansible script for automatic deployment of docker environment
 
 ### Used hosts
-To change destination you should create 
+To change destination you should create new hostgroup and add machines there. 
+To change authorized user changed ansible_user to new value.
 
 ```
 *$ cat ansible/hosts*
