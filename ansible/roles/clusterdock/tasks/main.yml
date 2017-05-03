@@ -12,3 +12,14 @@
 - name: clusterdock requirements
   pip:
     requirements: /opt/clusterdock/requirements.txt
+
+- name: setting clusterdock run scripts
+  file: path=/opt/clusterdock state=directory
+
+- name: uploading scripts
+  copy: 
+    src: "{{item}}"
+    dest: /opt/clusterdock
+    mode: 755
+  with_fileglob:
+    - "*"
