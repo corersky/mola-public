@@ -62,14 +62,16 @@ Starting scripts are:
 
 ### Cloudera scripts
 
-#### Start
+| Start | |
+| --- | --- |
 | Start script |```/opt/clustertest/cdh/start.sh``` |
 | Start time | ~17 minutes |
 | Download and start time| ~40 minutes |
 
-#### Stop
-| Stoping script| ```/opt/clustertest/cdh/stop.sh```|
-| Stoping time| ~2 minute |
+| Stop | |
+| --- | --- |
+| Stoping script | ```/opt/clustertest/cdh/stop.sh``` |
+| Stoping time | ~2 minute |
 
 #### Status
 ```
@@ -82,14 +84,16 @@ CONTAINER ID        IMAGE                                                       
 ```
 
 ### HortonWorks stack
-#### Start
+| Start | |
+| --- | --- |
 | Start script |```/opt/clustertest/hdp/start.sh``` |
 | Start time | ~10 minutes |
-| Download and start time| ~40 minutes |
+| Download and start time | ~40 minutes |
 
-#### Stop
-| Stoping script| ```/opt/clustertest/hdp/stop.sh```|
-| Stoping time| ~1 minute |
+| Stop | |
+| --- | --- |
+| Stoping script | ```/opt/clustertest/hdp/stop.sh```|
+| Stoping time | ~1 minute |
 
 #### Status
 ```
