@@ -56,24 +56,22 @@ total 284
 --wxrw--wt 1 root root     88 May  4 14:06 stop.sh
 ```
 
-Starting scripts are:
-- ```/opt/clustertest/cdh/start.sh``` for Cloudera stack
-- ```/opt/clustertest/hdp/start.sh``` for HortonWorks stack
+### Starting and stopping scripts
+| Distribution | Utility | Start script | Stop script | 
+| --- | --- | --- | --- | 
+| CDH | Cloudera Manager | ```/opt/clustertest/cdh/start.sh``` | ```/opt/clustertest/cdh/stop.sh``` | 
+| HDP | Ambari | ```/opt/clustertest/hdp/start.sh``` | ```/opt/clustertest/hdp/stop.sh``` |
+| MapR | | | |
 
-### Cloudera scripts
+### Starting time
+| Distribution | Starting time | Downloading time | Stopping time |
+| --- | --- | --- | --- |
+| CDH | ~17 min. | ~40 min. | ~2 min. |
+| HDP | ~10 min. | ~40 min. | ~1 min |
+| MapR | | | | 
 
-| Start | |
-| --- | --- |
-| Start script |```/opt/clustertest/cdh/start.sh``` |
-| Start time | ~17 minutes |
-| Download and start time| ~40 minutes |
 
-| Stop | |
-| --- | --- |
-| Stoping script | ```/opt/clustertest/cdh/stop.sh``` |
-| Stoping time | ~2 minute |
-
-#### Status
+#### Cloudera docker status
 ```
 /opt/clustertest/cdh # docker ps
 CONTAINER ID        IMAGE                                                        COMMAND             CREATED             STATUS              PORTS                                              NAMES
@@ -83,19 +81,7 @@ CONTAINER ID        IMAGE                                                       
 15e9e562cbd2        docker.io/cloudera/clusterdock:cdh580_cm581_primary-node     "/sbin/init"        2 hours ago         Up 2 hours          0.0.0.0:32773->7180/tcp, 0.0.0.0:32772->8888/tcp   clever_hypatia
 ```
 
-### HortonWorks stack
-| Start | |
-| --- | --- |
-| Start script |```/opt/clustertest/hdp/start.sh``` |
-| Start time | ~10 minutes |
-| Download and start time | ~40 minutes |
-
-| Stop | |
-| --- | --- |
-| Stoping script | ```/opt/clustertest/hdp/stop.sh```|
-| Stoping time | ~1 minute |
-
-#### Status
+#### HortonWorks docker status
 ```
 /opt/clustertest/hdp # docker ps
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                NAMES
