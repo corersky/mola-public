@@ -30,3 +30,6 @@
     - libffi-dev  
     - libxml2-dev 
     - libxmlsec1-dev
+
+- name: install python packages
+  pip: name=docker-compose state=present
