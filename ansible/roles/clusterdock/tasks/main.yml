@@ -1,7 +1,11 @@
 ---
 
 - name: setting clusterdock
-  file: path=/opt/clusterdock state=directory
+  file: path={{item}} state=directory
+  with_items:
+    - /opt/clusterdock
+    - /opt/clustertest
+    - /opt/clustertest/cdh
 
 - name: clone directory
   git:
@@ -13,13 +17,10 @@
   pip:
     requirements: /opt/clusterdock/requirements.txt
 
-- name: setting clusterdock run scripts
-  file: path=/opt/clusterdock-scripts state=directory
-
 - name: uploading scripts
   copy: 
     src: "{{item}}"
-    dest: /opt/clusterdock-scripts
+    dest: /opt/clustertest/cdh
     mode: 755
   with_fileglob:
     - "*"
