@@ -63,7 +63,7 @@ total 284
 | HDP | Ambari | ```/opt/clustertest/hdp/start.sh``` | ```/opt/clustertest/hdp/stop.sh``` |
 | MapR | | | |
 
-### Starting time
+### Action times
 | Distribution | Starting time | Downloading time | Stopping time |
 | --- | --- | --- | --- |
 | CDH | ~17 min. | ~40 min. | ~2 min. |
