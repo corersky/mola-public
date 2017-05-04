@@ -23,8 +23,8 @@ clustertest ansible_connection=ssh ansible_host=ec2-54-154-134-102.eu-west-1.com
 
 ### Ansible commands
 
-*preview mode*
+**preview mode**
 ```ansible-playbook clustertest.yml -i hosts -sC```
 
-*sudo mode*
+**sudo mode**
 ```ansible-playbook clustertest.yml -i hosts -s```
