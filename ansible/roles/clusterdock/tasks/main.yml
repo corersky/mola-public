@@ -17,6 +17,18 @@
   pip:
     requirements: /opt/clusterdock/requirements.txt
 
+- name: removing docker-py
+  pip: name={{item}} state=absent
+  with_items:
+    - docker-py
+    - docker
+
+- name: install latest docker
+  pip: name={{item}} state=latest
+  with_items:
+    - docker 
+#    - docker-py
+
 - name: uploading scripts
   copy: 
     src: "{{item}}"
