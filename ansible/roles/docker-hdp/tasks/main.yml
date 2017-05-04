@@ -1,7 +1,11 @@
 ---
 
 - name: setting docker-hdp
-  file: path=/opt/docker-hdp state=directory
+  file: path={{item}} state=directory
+  with_items:
+    - /opt/docker-hdp
+    - /opt/clustertest
+    - /opt/clustertest/hdp
 
 - name: clone directory
   git:
@@ -9,13 +13,10 @@
     dest: /opt/docker-hdp
     clone: yes
 
-- name: setting ambari-setup
-  file: path=/opt/ambari-setup state=directory
-
 - name: uploading scripts
   copy: 
     src: "{{item}}"
-    dest: /opt/ambari-setup
+    dest: /opt/clustertest/hdp
     mode: 755
   with_fileglob:
     - "*sh"
@@ -23,7 +24,7 @@
 - name: uploading jsons
   copy: 
     src: "{{item}}"
-    dest: /opt/ambari-setup
+    dest: /opt/clustertest/hdp
     mode: 644
   with_fileglob:
     - "*json"
