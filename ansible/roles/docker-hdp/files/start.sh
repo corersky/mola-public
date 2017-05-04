@@ -41,7 +41,7 @@ echo
 sleep 720
 
 echo "Setting Hive Meta Store to docker postgres.dev container."
-curl -H 'X-Requested-By: ambari' -X PUT -u admin:admin http://${SERVER}/api/v1/clusters/HDP-hbase -i -d @hive_config_2.json 
+curl -H 'X-Requested-By: ambari' -X PUT -u admin:admin http://${SERVER}/api/v1/clusters/HDP-hbase -i -d @hive_config.json 
 echo "done."
 echo
 echo "Restarting Hive."
