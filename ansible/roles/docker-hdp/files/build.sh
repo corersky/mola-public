@@ -15,6 +15,9 @@ echo
 date
 echo
 
+echo "Launching docker HDP cluster."
+docker-compose -d -f /opt/docker-hdp/examples/compose/multi-container.yml up
+
 echo "Waiting for Ambari server ${SERVER}"
 until $(curl --output /dev/null --silent --head --fail http://${SERVER}); do
     printf '.'
