@@ -60,9 +60,18 @@ Starting scripts are:
 - ```/opt/clustertest/cdh/start.sh``` for Cloudera stack
 - ```/opt/clustertest/hdp/start.sh``` for HortonWorks stack
 
-### Cloudera stack
-After start of ```/opt/clustertest/cdh/start.sh``` you can see several docker images running.
+### Cloudera scripts
 
+#### Start
+| Start script |```/opt/clustertest/cdh/start.sh``` |
+| Start time | ~17 minutes |
+| Download and start time| ~40 minutes |
+
+#### Stop
+| Stoping script| ```/opt/clustertest/cdh/stop.sh```|
+| Stoping time| ~2 minute |
+
+#### Status
 ```
 /opt/clustertest/cdh # docker ps
 CONTAINER ID        IMAGE                                                        COMMAND             CREATED             STATUS              PORTS                                              NAMES
@@ -73,8 +82,16 @@ CONTAINER ID        IMAGE                                                       
 ```
 
 ### HortonWorks stack
-After start of ```/opt/clustertest/hdp/start.sh``` you can see several docker images running.
+#### Start
+| Start script |```/opt/clustertest/hdp/start.sh``` |
+| Start time | ~10 minutes |
+| Download and start time| ~40 minutes |
 
+#### Stop
+| Stoping script| ```/opt/clustertest/hdp/stop.sh```|
+| Stoping time| ~1 minute |
+
+#### Status
 ```
 /opt/clustertest/hdp # docker ps
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                NAMES
