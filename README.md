@@ -31,23 +31,29 @@ clustertest ansible_connection=ssh ansible_host=ec2-54-154-134-102.eu-west-1.com
 ```ansible-playbook clustertest.yml -i hosts -s```
 
 
-## Hadoop scripts
+## clustertest scripts
 Scripts are deployed in ```/opt/clustertest```.
 You can see directory ```cdh``` for Cloudera and directory ```hdp``` for HortonWorks stack. 
+
+### HortonWorks ```hdp``` folder
 ```
-/opt/clustertest # ls -l cdh
-total 8
+# ls -l cdh
+total 12
 --wxrw--wt 1 root root 207 May  4 13:19 housekeeping.sh
 --wxrw--wt 1 root root 150 May  4 13:19 start.sh
+--wxrw--wt 1 root root  67 May  4 14:28 stop.sh
 ```
 
+### Cloudera ```cdh``` folder
 ```
 /opt/clustertest # ls -l hdp
-total 276
+total 284
+--wxrw--wt 1 root root     88 May  4 14:18 clean.sh
 --w----r-T 1 root root 259574 May  4 13:19 HDP_hbase_dump_blueprint.json
 --w----r-T 1 root root  10866 May  4 13:19 hive_config.json
 --w----r-T 1 root root    322 May  4 13:19 hostmapping_multi.json
---wxrw--wt 1 root root   1628 May  4 13:19 start.sh
+--wxrw--wt 1 root root   1628 May  4 14:07 start.sh
+--wxrw--wt 1 root root     88 May  4 14:06 stop.sh
 ```
 
 Starting scripts are:
