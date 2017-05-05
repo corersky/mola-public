@@ -58,7 +58,7 @@ total 284
 
 ### Starting and stopping scripts
 | Distribution | Cloudera | HortonWorks | MapR | 
-| --- | --- | --- | --- | 
+| --- | :---: | :---: | :---: | 
 | Utility | Cloudera Manager | Ambari | Mapr Control System  |
 | Start script | ```/opt/clustertest/cdh/start.sh``` | ```/opt/clustertest/hdp/start.sh```  | |
 | Stop script | ```/opt/clustertest/cdh/stop.sh``` | ```/opt/clustertest/hdp/stop.sh``` | |
