@@ -60,7 +60,7 @@ total 284
 | Distribution | Utility | Start script | Stop script | 
 | --- | --- | --- | --- | 
 | CDH | Cloudera Manager | ```/opt/clustertest/cdh/start.sh``` | ```/opt/clustertest/cdh/stop.sh``` | 
-| HDP | Ambari | ```/opt/clustertest/hdp/start.sh``` | ```/opt/clustertest/cdh/stop.sh``` |
+| HDP | Ambari | ```/opt/clustertest/hdp/start.sh``` | ```/opt/clustertest/hdp/stop.sh``` |
 | MapR | | | |
 
 ### Action times
