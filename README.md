@@ -4,6 +4,23 @@ Automated testing for Cloudera and HortonWorks Hadoop ecosystem.
 
 # Ansible script for automatic deployment of docker environment
 
+## Ansible environment
+Check if you have ansible installed:
+### Linux
+```apt install ansible```
+
+### MacOSX
+```brew install ansible```
+
+### Installation via python packages
+```pip install ansible```
+
+### Clone ansible tasks repository
+```
+git clone git@github.com:Datameer-Inc/mola-public.git
+cd mola-public/ansible
+```
+
 ## Used hosts
 To change destination you should create new hostgroup and add machines there. 
 To change authorized user changed ansible_user to new value.
