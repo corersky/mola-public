@@ -57,18 +57,14 @@ total 284
 ```
 
 ### Starting and stopping scripts
-| Distribution | Utility | Start script | Stop script | 
+|  | Distribution | Cloudera | HortonWorks | MapR | 
 | --- | --- | --- | --- | 
-| CDH | Cloudera Manager | ```/opt/clustertest/cdh/start.sh``` | ```/opt/clustertest/cdh/stop.sh``` | 
-| HDP | Ambari | ```/opt/clustertest/hdp/start.sh``` | ```/opt/clustertest/hdp/stop.sh``` |
-| MapR | | | |
-
-### Action times
-| Distribution | Starting time | Downloading time | Stopping time |
-| --- | --- | --- | --- |
-| CDH | ~15 min. | ~40 min. | ~2 min. |
-| HDP | ~10 min. | ~40 min. | ~1 min |
-| MapR | | | | 
+| Utility | Cloudera Manager | Ambari | mapr management console |
+| Start script | ```/opt/clustertest/cdh/start.sh``` | ```/opt/clustertest/hdp/start.sh```  | |
+| Stop script | ```/opt/clustertest/cdh/stop.sh``` | ```/opt/clustertest/hdp/stop.sh```  | |
+| Download time | ~40 min. | ~40 min. | |
+| Starting time | ~10 min. | ~15 min. | | 
+| Stopping time | ~1 min. | ~2 min. | |
 
 
 #### Cloudera docker status
