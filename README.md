@@ -6,14 +6,9 @@ Automated testing for Cloudera and HortonWorks Hadoop ecosystem.
 
 ## Ansible environment
 Check if you have ansible installed:
-### Linux
-```apt install ansible```
-
-### MacOSX
-```brew install ansible```
-
-### Installation via python packages
-```pip install ansible```
+- Linux ```apt install ansible```
+- MacOSX ```brew install ansible```
+- or install ansible with pip ```pip install ansible```
 
 ### Clone ansible tasks repository
 ```
