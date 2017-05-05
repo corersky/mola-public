@@ -493,6 +493,7 @@ function runJob() {
         'findbugs')
             echoInfo "Running...$jobInQuestion"
             jobCreatesTestXmls=false
+            myEnvVariables[JAVA_TOOL_OPTIONS]="-Dfile.encoding=UTF8"
             if atLeastVersion 6; then
                 runGradle 17 19 'findbugsMain javaImportsVsWhitelist :checkJavadoc'
                 echoInfo "Exit code: $?"
