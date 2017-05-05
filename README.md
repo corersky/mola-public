@@ -60,13 +60,13 @@ total 284
 | Distribution | Utility | Start script | Stop script | 
 | --- | --- | --- | --- | 
 | CDH | Cloudera Manager | ```/opt/clustertest/cdh/start.sh``` | ```/opt/clustertest/cdh/stop.sh``` | 
-| HDP | Ambari | ```/opt/clustertest/hdp/start.sh``` | ```/opt/clustertest/hdp/stop.sh``` |
+| HDP | Ambari | ```/opt/clustertest/hdp/start.sh``` | ```/opt/clustertest/cdh/stop.sh``` |
 | MapR | | | |
 
 ### Action times
 | Distribution | Starting time | Downloading time | Stopping time |
 | --- | --- | --- | --- |
-| CDH | ~17 min. | ~40 min. | ~2 min. |
+| CDH | ~15 min. | ~40 min. | ~2 min. |
 | HDP | ~10 min. | ~40 min. | ~1 min |
 | MapR | | | | 
 
