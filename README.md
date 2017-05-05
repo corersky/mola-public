@@ -74,6 +74,7 @@ total 284
 | Utility | Cloudera Manager | Ambari | Mapr Control System  |
 | Start script | ```/opt/clustertest/cdh/start.sh``` | ```/opt/clustertest/hdp/start.sh```  | |
 | Stop script | ```/opt/clustertest/cdh/stop.sh``` | ```/opt/clustertest/hdp/stop.sh``` | |
+| Cleaning script | ```/opt/clustertest/cdh/clean.sh``` | ```/opt/clustertest/hdp/clean.sh``` | | 
 | Download time | ~40 min. | ~40 min. | |
 | Starting time | ~10 min. | ~15 min. | | 
 | Stopping time | ~1 min. | ~2 min. | |

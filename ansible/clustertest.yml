@@ -4,7 +4,7 @@
     - bootstrap
     - clusterdock
     - docker-hdp
-    - Stouts.openvpn
+ #   - Stouts.openvpn
 
   vars:
     openvpn_enabled: yes                                # The role is enabled
