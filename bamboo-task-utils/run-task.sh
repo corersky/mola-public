@@ -447,7 +447,7 @@ function runJob() {
     fi
     local jobInQuestion="${jobArg:-$planNameInQuestion}"
     [ -z "$jobInQuestion" ] && die "Neither bamboo_buildPlanName variable nor input argument passed."
-    local shortName=$(getKey "$jobInQuestion")
+    shortName=$(getKey "$jobInQuestion")
     [ -n "$shortName" ] || die "Could not find '$jobInQuestion' in job list. Check the supported job list."
     echoInfo "Looking for '$jobInQuestion',  with shortName '$shortName'"
 
@@ -926,6 +926,13 @@ function finish() {
     if inDockerContainer; then
         echoInfo "Fixed during BUILD-234: Killing the Xvfb processes started by gulp."
         pkill -xe Xvfb || true
+        # compile datameer distributions leaves 4GB of dependencies in the gradle cache
+        if [[ "compile" == "${shortName:-}" ]] || [[ "allDists" == "${shortName:-}" ]]; then
+            if [ -n "${GRADLE_USER_HOME:-}" ]; then
+                rm -rf "${GRADLE_USER_HOME:-}/caches"
+            fi
+        fi
+
     fi
     # echoInfo "In 'finish' function, triggered on signal EXIT."
     # cleanup gradle temp directory if created.
