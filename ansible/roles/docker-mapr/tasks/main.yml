@@ -1,0 +1,36 @@
+---
+
+- name: setting docker-mapr
+  file: path={{item}} state=directory
+  with_items:
+    - /opt/docker-mapr
+    - /opt/clustertest
+    - /opt/clustertest/mapr
+
+- lineinfile:
+    path: /etc/default/docker
+    regexp: '^DOCKER_OPTS='
+    line: 'DOCKER_OPTS="--dns 8.8.8.8 --dns 8.8.4.4 -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock --storage-driver=aufs -b bridge0 --fixed-cidr=10.10.100.0/24"'
+  notify: restart docker
+
+- name: clone directory
+  git:
+    repo: https://github.com/mapr/mapr-docker-multi.git
+    dest: /opt/docker-mapr
+    clone: yes
+
+- name: uploading scripts
+  copy: 
+    src: "{{item}}"
+    dest: /opt/clustertest/mapr
+    mode: 755
+  with_fileglob:
+    - "*sh"
+
+- name: uploading mapr files
+  copy: 
+    src: "{{item}}"
+    dest: /opt/clustertest/mapr
+    mode: 644
+  with_fileglob:
+    - "*json"
