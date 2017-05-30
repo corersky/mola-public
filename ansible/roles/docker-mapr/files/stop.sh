@@ -1,24 +1,5 @@
 #!/bin/bash
 
-CLUSTERNAME=$1
-
-DISKLISTFILE=diskloop.$CLUSTERNAME
-DISKLVFILE=disklv.$CLUSTERNAME # file to store used LV volumes
-
-DISKFILES=`cat $DISKLISTFILE`
-DISKNUMBER=`cat $DISKLISTFILE | wc -l`
-DISKLV=`cat $DISKLVFILE`
-
-if [ ! -f $DISKLISTFILE ]; then
- echo "$DISKLISTFILE doesn't exist!"
- exit
-fi
-
-if [ ! -f $DISKLVFILE ]; then
- echo "$DISKLVFILE doesn't exist!"
- exit
-fi
-
 if [[ -z $(which docker)  ]] ; then
         echo " docker could not be found on this server. Please install Docker version 1.6.0 or later."
 	echo " If it is already installed Please update the PATH env variable." 
@@ -34,11 +15,30 @@ fi
 # Usage Check.
 if [[ $# -ne 1 ]]
 then
-	echo " Usage : $0 ClusterName NumberOfNodes MemSize-in-kB"
+	echo " Usage : $0 ClusterName"
 	exit
 fi
 
+CLUSTERNAME=$1
+
+DISKLISTFILE=diskloop.$CLUSTERNAME
+DISKLVFILE=disklv.$CLUSTERNAME # file to store used LV volumes
+
+DISKFILES=`cat $DISKLISTFILE`
+DISKNUMBER=`cat $DISKLISTFILE | wc -l`
+DISKLV=`cat $DISKLVFILE`
+
 DOCKER_CONTAINERS=`docker ps | grep maprtech | awk '{print $1}'`
+
+if [ ! -f $DISKLISTFILE ]; then
+ echo "$DISKLISTFILE doesn't exist!"
+ exit
+fi
+
+if [ ! -f $DISKLVFILE ]; then
+ echo "$DISKLVFILE doesn't exist!"
+ exit
+fi
 
 for container in ${DOCKER_CONTAINERS}
 do
