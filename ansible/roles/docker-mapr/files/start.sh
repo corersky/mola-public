@@ -90,6 +90,9 @@ cldbip=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${cldb_cid} 
 container_ips[0]=$cldbip
 echo "Control Node IP : $cldbip		Starting the cluster: https://${cldbip}:8443/    login:mapr   password:mapr"
 
+sshpass -p "mapr" ssh -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${cldbip} 'yum -y install mapr-hbase-master mapr-jobtracker'
+
+
 sleep 20
 # Launch Data Nodes 
 i=1
@@ -110,6 +113,7 @@ for ip in "${container_ips[@]}"
 do
 	sshpass -p "mapr" scp -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r /tmp/hosts.$$ ${ip}:/tmp/hosts
 	sshpass -p "mapr" ssh -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${ip} 'cat /tmp/hosts >> /etc/hosts'
+  sshpass -p "mapr" ssh -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${ip} 'yum -y install mapr-hbase'
 done
 
 # For Spark
