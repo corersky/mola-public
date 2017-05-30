@@ -90,8 +90,16 @@ cldbip=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${cldb_cid} 
 container_ips[0]=$cldbip
 echo "Control Node IP : $cldbip		Starting the cluster: https://${cldbip}:8443/    login:mapr   password:mapr"
 
+echo
+echo "Installing mapr-hbase-master and mapr-jobtracker"
 sshpass -p "mapr" ssh -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${cldbip} 'yum -y install mapr-hbase-master mapr-jobtracker'
-
+echo "Removing zookeeper from inittab"
+sshpass -p "mapr" ssh -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${cldbip} 'grep -r zookeeper /etc/inittab > /tmp/inittab; mv /tmp/inittab /etc/inittab'
+echo "Starting zookeeper on node $cldbip"
+sshpass -p "mapr" ssh -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${cldbip} '/opt/mapr/zookeeper/zookeeper-3.4.5/bin/zkServer.sh start'
+delay 10
+echo "Reconfiguring mapr and restarting mapr-warden"
+sshpass -p "mapr" ssh -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${cldbip} '/opt/mapr/server/configure.sh -R; service mapr-warden restart'
 
 sleep 20
 # Launch Data Nodes 
@@ -114,6 +122,7 @@ do
 	sshpass -p "mapr" scp -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r /tmp/hosts.$$ ${ip}:/tmp/hosts
 	sshpass -p "mapr" ssh -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${ip} 'cat /tmp/hosts >> /etc/hosts'
   sshpass -p "mapr" ssh -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${ip} 'yum -y install mapr-hbase'
+  sshpass -p "mapr" ssh -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${ip} '/opt/mapr/server/configure.sh -R; service mapr-warden restart'
 done
 
 # For Spark
