@@ -1,5 +1,11 @@
 ---
 
+- name: Install packages
+  yum: name={{item}} state=installed
+  with_items:
+    - lvm2
+### check repositories
+
 - name: setting docker-mapr
   file: path={{item}} state=directory
   with_items:
@@ -13,11 +19,12 @@
     line: 'DOCKER_OPTS="--dns 8.8.8.8 --dns 8.8.4.4 -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock --storage-driver=aufs -b bridge0 --fixed-cidr=10.10.100.0/24"'
   notify: restart docker
 
-- name: clone directory
-  git:
-    repo: https://github.com/mapr/mapr-docker-multi.git
-    dest: /opt/docker-mapr
-    clone: yes
+### superseeded by launch-cluster.sh modified script
+#- name: clone directory
+#  git:
+#    repo: https://github.com/mapr/mapr-docker-multi.git
+#    dest: /opt/docker-mapr
+#    clone: yes
 
 - name: uploading scripts
   copy: 
