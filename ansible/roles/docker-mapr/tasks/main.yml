@@ -4,7 +4,6 @@
   yum: name={{item}} state=installed
   with_items:
     - lvm2
-### check repositories
 
 - name: setting docker-mapr
   file: path={{item}} state=directory
