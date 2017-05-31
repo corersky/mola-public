@@ -1,13 +1,5 @@
 ---
 
-- apt_key: 
-    url: https://download.docker.com/linux/ubuntu/gpg
-    state: present
-
-#- apt_repository:
-#    repo: https://download.docker.com/linux/ubuntu trusty stable
-#    state: present
-
 - name: install packages
   apt: name={{item}} state=present
   with_items:
@@ -22,8 +14,6 @@
     - dos2unix
     - iptables-persistent
     - nginx
-#    - docker.io
-    - docker-ce
     - lvm2
     - build-essential 
     - libssl-dev 
@@ -31,5 +21,4 @@
     - libxml2-dev 
     - libxmlsec1-dev
 
-- name: install python packages
-  pip: name=docker-compose state=present
+- include: docker.yml
