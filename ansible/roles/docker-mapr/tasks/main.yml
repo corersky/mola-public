@@ -33,11 +33,3 @@
     mode: 755
   with_fileglob:
     - "*sh"
-
-- name: uploading mapr files
-  copy: 
-    src: "{{item}}"
-    dest: /opt/clustertest/mapr
-    mode: 644
-  with_fileglob:
-    - "*json"
