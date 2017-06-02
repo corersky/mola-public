@@ -4,6 +4,7 @@
     - bootstrap
     - clusterdock
     - docker-hdp
+    - docker-mapr
  #   - Stouts.openvpn
 
   vars:
