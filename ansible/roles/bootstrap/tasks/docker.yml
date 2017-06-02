@@ -24,10 +24,11 @@
     state: present
   register: is_repository
 
-- apt: name=foo update_cache=yes
-  when: is_repository
+#- apt: name=docker-ce state=present update_cache=yes
+#  when: is_repository
 
 - apt: name=docker-ce state=present
+#  when: not is_repository 
 
 - get_url:
     url: https://github.com/docker/compose/releases/download/1.13.0/docker-compose-Linux-x86_64
