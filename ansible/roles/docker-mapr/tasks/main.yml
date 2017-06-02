@@ -1,10 +1,5 @@
 ---
 
-- name: Install packages
-  yum: name={{item}} state=installed
-  with_items:
-    - lvm2
-
 - name: setting docker-mapr
   file: path={{item}} state=directory
   with_items:
