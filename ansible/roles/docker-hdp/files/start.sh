@@ -1,6 +1,7 @@
 #!/bin/bash
 
-source ./repo-source.sh
+#source ./repo-source.sh
+source /opt/docker-hdp/.env
 
 if [ $# -lt 1 ]; then
   SERVER="10.10.0.1:8080"
