@@ -36,7 +36,7 @@ echo > $DISKLISTFILE
 for i in `seq $NUMBEROFNODES` 
 do 
   echo "Creating LV "
-  lvcreate -L $DISKSIZE /dev/$VG/lv$CLUSTERNAME$i ### deletion with lvremove /dev/$VG/lv$CLUSTERNAME$i
+  lvcreate -L $DISKSIZE -n lv$CLUSTERNAME$i $VG ### deletion with lvremove /dev/$VG/lv$CLUSTERNAME$i
   echo "/dev/$VG/lv$CLUSTERNAME$i" >> $DISKLVFILE
   echo "Creating loop device"
   losetup /dev/loop$i /dev/$VG/lv$CLUSTERNAME$i # deletion with losetup -d /dev/loop$i
@@ -48,7 +48,6 @@ then
 	echo " Disklistile : ${DISKLISTFILE} doesn't exist"
 	exit
 fi
-
 
 #declare -a disks=(`for i in /dev/sd[a-z]; do   [[ $(sfdisk -l $i | wc -l) -eq 2 ]]  && echo $i; done`)
 declare -a disks=(`cat ${DISKLISTFILE}`)
