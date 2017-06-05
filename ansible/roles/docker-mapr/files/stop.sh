@@ -54,10 +54,12 @@ do
   losetup -vd $lodevice && echo "$lodevice removed." || echo "ehm problem occured!"
 done
 
-for lv in  
+for lv in $DISKFILES
+do
   echo "Removing logical volume $lv"
   lvremove -vf $lv && echo "$lv removed." || echo "some problem with lv removal".
 done
+
 
 
 # LOOPDEVICES=`losetup -a`
