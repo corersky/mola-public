@@ -1,36 +1,35 @@
 ---
 
-### uninstall old package
-- apt: name=docker state=absent
-- apt: name=docker-engine state=absent
+- name: uninstall packages if exists 
+  apt: name={{item}} state=absent
+  with_items: 
+    - docker
+    - docker-engine
 
-- apt: name={{item}} state=present
+- name: Installing docker requirements
+  apt: name={{item}} state=present
   with_items:
     - apt-transport-https 
     - ca-certificates 
     - curl 
     - software-properties-common
 
-- apt_key: 
+- name: Adding key for apt repository
+  apt_key: 
     url: https://download.docker.com/linux/ubuntu/gpg
-    state: present
-
-- apt_key: 
     id: 0EBFCD88
     state: present
 
-- apt_repository:
+- name: Adding docker repository
+  apt_repository:
     repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable"
     state: present
-  register: is_repository
 
-#- apt: name=docker-ce state=present update_cache=yes
-#  when: is_repository
+- name: Install docker container edition
+  apt: name=docker-ce state=present
 
-- apt: name=docker-ce state=present
-#  when: not is_repository 
-
-- get_url:
+- name: Install latest docker-compose 
+  get_url:
     url: https://github.com/docker/compose/releases/download/1.13.0/docker-compose-Linux-x86_64
     dest: /usr/local/bin/docker-compose 
     mode: 755
