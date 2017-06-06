@@ -15,7 +15,7 @@ if [[ $dv < 1.6.0 ]] ; then
 fi
 
 # Usage Check.
-if [[ $# -ne 4 ]]
+if [[ $# -ne 3 ]]
 then
 	echo " Usage : $0 ClusterName NumberOfNodes MemSize-in-kB"
 	exit
