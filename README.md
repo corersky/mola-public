@@ -29,7 +29,7 @@ clustertest ansible_connection=ssh ansible_host=ec2-54-154-134-102.eu-west-1.com
 ## Ansible roles
 | role | usage |
 | --- | --- |
-|  bootstrap | basic machine setup |
+|  bootstrap | basic machine setup, added docker installation from official docker repository |
 |  clusterdock | CDH cluster setup |
 |  docker-hdp | HDP cluster setup |
 |  docker-mapr | MapR cluster setup |
