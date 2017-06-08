@@ -32,6 +32,7 @@ clustertest ansible_connection=ssh ansible_host=ec2-54-154-134-102.eu-west-1.com
 |  bootstrap | basic machine setup |
 |  clusterdock | CDH cluster setup |
 |  docker-hdp | HDP cluster setup |
+|  docker-mapr | MapR cluster setup |
 |  Stouts.openvpn | OpenVPN setup |
 
 ## Ansible commands
