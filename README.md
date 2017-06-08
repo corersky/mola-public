@@ -9,6 +9,7 @@ Check if you have ansible installed:
 - Linux ```apt install ansible```
 - MacOSX ```brew install ansible```
 - on Windows install ansible with pip ```pip install ansible```
+
 [Installation procedures for Ansible](http://docs.ansible.com/ansible/intro_installation.html)
 
 ### Clone ansible tasks repository
