@@ -27,7 +27,7 @@ MEMTOTAL=$3
 
 DISKLISTFILE=$CLUSTERNAME.diskloop # file to store used loop devices
 DISKLVFILE=$CLUSTERNAME.disklv # file to store used LV volumes
-DISKSIZE=10G
+LVSIZE=10G
 VG=vg00
 
 ### diskfile creation
@@ -36,7 +36,7 @@ touch $DISKLISTFILE
 for i in `seq $NUMBEROFNODES` 
 do 
   echo "Creating LV "
-  lvcreate -L $DISKSIZE -n lv$CLUSTERNAME_$i $VG && \
+  lvcreate -L $LVSIZE -n lv$CLUSTERNAME_$i $VG && \
     echo "/dev/$VG/lv$CLUSTERNAME_$i" >> $DISKLVFILE
   echo "Creating loop device"
   losetup /dev/loop$i /dev/$VG/lv$CLUSTERNAME_$i # deletion with losetup -d /dev/loop$i
