@@ -4,11 +4,12 @@ Automated testing for Cloudera and HortonWorks Hadoop ecosystem.
 
 # Ansible script for automatic deployment of docker environment
 
-## Ansible environment
+## Ansible environment setup
 Check if you have ansible installed:
 - Linux ```apt install ansible```
 - MacOSX ```brew install ansible```
-- or install ansible with pip ```pip install ansible```
+- on Windows install ansible with pip ```pip install ansible```
+[Installation procedures for Ansible](http://docs.ansible.com/ansible/intro_installation.html)
 
 ### Clone ansible tasks repository
 ```
@@ -18,12 +19,12 @@ cd mola-public/ansible
 
 ## Used hosts
 To change destination you should create new hostgroup and add machines there. 
-To change authorized user changed ansible_user to new value.
+To change authorized user changed ansible_user to your login credentials.
 
 ```
 $ cat ansible/hosts
 [AWS]
-clustertest ansible_connection=ssh ansible_host=ec2-54-154-134-102.eu-west-1.compute.amazonaws.com ansible_user=max 
+clustertest ansible_connection=ssh ansible_host=ec2-54-154-134-102.eu-west-1.compute.amazonaws.com ansible_user=YOUR_USER 
 ```
 
 ## Ansible roles
@@ -48,15 +49,6 @@ clustertest ansible_connection=ssh ansible_host=ec2-54-154-134-102.eu-west-1.com
 Scripts are deployed in ```/opt/clustertest```.
 You can see directory ```cdh``` for Cloudera and directory ```hdp``` for HortonWorks stack. 
 
-### HortonWorks ```hdp``` folder
-```
-# ls -l cdh
-total 12
---wxrw--wt 1 root root 207 May  4 13:19 housekeeping.sh
---wxrw--wt 1 root root 150 May  4 13:19 start.sh
---wxrw--wt 1 root root  67 May  4 14:28 stop.sh
-```
-
 ### Cloudera ```cdh``` folder
 ```
 /opt/clustertest # ls -l hdp
@@ -68,6 +60,34 @@ total 284
 --wxrw--wt 1 root root   1628 May  4 14:07 start.sh
 --wxrw--wt 1 root root     88 May  4 14:06 stop.sh
 ```
+start.sh, stop.sh - start/stop scripts
+clean.sh - docker-compose rm 
+
+### HortonWorks ```hdp``` folder
+```
+# ls -l cdh
+total 12
+--wxrw--wt 1 root root 207 May  4 13:19 housekeeping.sh
+--wxrw--wt 1 root root 150 May  4 13:19 start.sh
+--wxrw--wt 1 root root  67 May  4 14:28 stop.sh
+```
+start.sh, stop.sh - start/stop scripts
+housekeeping.sh - removal of all docker images and containers 
+
+### MapR ```mapr``` folder
+```
+/opt/clustertest/mapr # ls -al
+total 32
+drwxr-xr-x 2 root root 4096 Jun  8 10:51 .
+drwxr-xr-x 5 root root 4096 Jun  5 19:03 ..
+-rw-r--r-- 1 root root   33 Jun  8 10:51 CLUSTERTEST.diskloop
+-rw-r--r-- 1 root root   78 Jun  8 10:51 CLUSTERTEST.disklv
+--wxrw--wt 1 root root  233 Jun  5 19:04 setup-host.sh
+--wxrw--wt 1 root root 4862 Jun  8 10:50 start.sh
+--wxrw--wt 1 root root 1804 Jun  8 10:14 stop.sh
+```
+start.sh, stop.sh - start/stop scripts
+CLUSTERTEST.diskloop and CLUSTERTEST.disklv are directories with stored values of used disks for MapR instance CLUSTERTEST
 
 ### Starting and stopping scripts
 | Distribution | Cloudera | HortonWorks | MapR | 
