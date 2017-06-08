@@ -31,15 +31,15 @@ DISKSIZE=10G
 VG=vg00
 
 ### diskfile creation
-echo > $DISKLVFILE
-echo > $DISKLISTFILE
+touch $DISKLVFILE
+touch $DISKLISTFILE
 for i in `seq $NUMBEROFNODES` 
 do 
   echo "Creating LV "
-  lvcreate -L $DISKSIZE -n lv$CLUSTERNAME$i $VG ### deletion with lvremove /dev/$VG/lv$CLUSTERNAME$i
-  echo "/dev/$VG/lv$CLUSTERNAME$i" >> $DISKLVFILE
+  lvcreate -L $DISKSIZE -n lv$CLUSTERNAME_$i $VG && \
+    echo "/dev/$VG/lv$CLUSTERNAME_$i" >> $DISKLVFILE
   echo "Creating loop device"
-  losetup /dev/loop$i /dev/$VG/lv$CLUSTERNAME$i # deletion with losetup -d /dev/loop$i
+  losetup /dev/loop$i /dev/$VG/lv$CLUSTERNAME_$i # deletion with losetup -d /dev/loop$i
   echo "/dev/loop$i" >> $DISKLISTFILE
 done
 
