@@ -47,14 +47,14 @@ do
   docker stop $container && echo "done." || echo "problem with stopping container."
 done
 
-for lodevice in $DISKLV
+for lodevice in $DISKFILES
 do 
   ### deletion with lvremove /dev/$VG/lv$CLUSTERNAME$i
   echo "Removing loopback device $lodevice"
   losetup -vd $lodevice && echo "$lodevice removed." || echo "ehm problem occured!"
 done
 
-for lv in $DISKFILES
+for lv in $DISKLV
 do
   echo "Removing logical volume $lv"
   lvremove -vf $lv && echo "$lv removed." || echo "some problem with lv removal".
