@@ -98,8 +98,8 @@ CLUSTERTEST.diskloop and CLUSTERTEST.disklv are directories with stored values o
 | Stop script | ```/opt/clustertest/cdh/stop.sh``` | ```/opt/clustertest/hdp/stop.sh``` | ```/opt/clustertest/mapr/stop.sh``` Usage : ./stop.sh ClusterName |
 | Cleaning script | ```/opt/clustertest/cdh/clean.sh``` | ```/opt/clustertest/hdp/clean.sh``` | | 
 | Download time | ~40 min. | ~40 min. | ~12min. |
-| Starting time | ~10 min. | ~15 min. | | 
-| Stopping time | ~1 min. | ~2 min. | |
+| Starting time | ~10 min. | ~15 min. | ~4min. | 
+| Stopping time | ~1 min. | ~2 min. | ~1min. |
 
 
 #### Cloudera docker status
