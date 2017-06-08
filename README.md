@@ -73,9 +73,9 @@ total 284
 | --- | :---: | :---: | :---: | 
 | Utility | Cloudera Manager | Ambari | Mapr Control System  |
 | Start script | ```/opt/clustertest/cdh/start.sh``` | ```/opt/clustertest/hdp/start.sh```  | ```/opt/clustertest/mapr/start.sh``` |
-| Stop script | ```/opt/clustertest/cdh/stop.sh``` | ```/opt/clustertest/hdp/stop.sh``` | ```/opt/clustertest/mapr/stop.sh``` |
+| Stop script | ```/opt/clustertest/cdh/stop.sh``` | ```/opt/clustertest/hdp/stop.sh``` | ```/opt/clustertest/mapr/stop.sh```  Usage : ./start.sh ClusterName NumberOfNodes MemSize-in-kB |
 | Cleaning script | ```/opt/clustertest/cdh/clean.sh``` | ```/opt/clustertest/hdp/clean.sh``` | | 
-| Download time | ~40 min. | ~40 min. | |
+| Download time | ~40 min. | ~40 min. | ~12min. |
 | Starting time | ~10 min. | ~15 min. | | 
 | Stopping time | ~1 min. | ~2 min. | |
 
@@ -98,4 +98,13 @@ b55a04495df0        hdp/master          "/bin/sh -c /start.sh"   12 seconds ago 
 81f6610c7994        hdp/worker          "/bin/sh -c /start.sh"   12 seconds ago      Up 10 seconds       0.0.0.0:6667->6667/tcp, 0.0.0.0:8042->8042/tcp, 0.0.0.0:8983->8983/tcp, 0.0.0.0:16020->16020/tcp, 0.0.0.0:16030->16030/tcp, 0.0.0.0:50010->50010/tcp, 0.0.0.0:50020->50020/tcp, 0.0.0.0:50030->50030/tcp, 0.0.0.0:50070->50070/tcp, 0.0.0.0:50075->50075/tcp, 0.0.0.0:50470->50470/tcp, 0.0.0.0:50475->50475/tcp, 0.0.0.0:45455->45454/tcp   compose_dn0.dev_1
 d58973a7e72b        hdp/ambari-server   "/bin/sh -c /start.sh"   12 seconds ago      Up 10 seconds       0.0.0.0:8080->8080/tcp   compose_ambari-server.dev_1
 178272b04fb1        hdp/postgres        "docker-entrypoint..."   12 seconds ago      Up 10 seconds       5432/tcp     compose_postgres.dev_1
+```
+
+#### MapR docker status
+```
+/opt/clustertest/hdp # docker ps
+CONTAINER ID        IMAGE                                          COMMAND                  CREATED             STATUS              PORTS               NAMES
+0f28cd61a950        docker.io/maprtech/mapr-data-cent67:5.2.0      "/bin/sh -c /usr/b..."   47 hours ago        Up 47 hours                             zen_nobel
+f718f13757c9        docker.io/maprtech/mapr-data-cent67:5.2.0      "/bin/sh -c /usr/b..."   47 hours ago        Up 47 hours                             objective_cray
+9b6b6ad40d10        docker.io/maprtech/mapr-control-cent67:5.2.0   "/bin/sh -c /usr/b..."   47 hours ago        Up 47 hours                             wonderful_kirch
 ```
