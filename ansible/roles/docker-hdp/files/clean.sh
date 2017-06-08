@@ -1,3 +1,2 @@
 #!/bin/bash
-source ./repo-source.sh
-docker-compose -f /opt/docker-hdp/examples/compose/multi-container.yml kill
+docker ps -a -f status=exited | grep hdp | awk '{print $2}' | xargs docker rm
