@@ -96,7 +96,7 @@ echo "Removing zookeeper from inittab"
 sshpass -p "mapr" ssh -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${cldbip} 'grep -r zookeeper /etc/inittab > /tmp/inittab; mv /tmp/inittab /etc/inittab'
 echo "Starting zookeeper on node $cldbip"
 sshpass -p "mapr" ssh -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${cldbip} '/opt/mapr/zookeeper/zookeeper-3.4.5/bin/zkServer.sh start'
-delay 10
+sleep 10
 echo "Reconfiguring mapr and restarting mapr-warden"
 sshpass -p "mapr" ssh -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${cldbip} '/opt/mapr/server/configure.sh -R; service mapr-warden restart'
 
