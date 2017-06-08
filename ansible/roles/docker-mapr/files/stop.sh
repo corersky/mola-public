@@ -57,7 +57,7 @@ done
 for lv in $DISKLV
 do
   echo "Removing logical volume $lv"
-  lvremove -vf $lv && echo "$lv removed." || echo "some problem with lv removal".
+  lvremove -f $lv && echo "$lv removed." || echo "some problem with lv removal".
 done
 
 
