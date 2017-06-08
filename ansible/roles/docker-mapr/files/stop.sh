@@ -21,8 +21,8 @@ fi
 
 CLUSTERNAME=$1
 
-DISKLISTFILE=diskloop.$CLUSTERNAME
-DISKLVFILE=disklv.$CLUSTERNAME # file to store used LV volumes
+DISKLISTFILE=$CLUSTERNAME.diskloop # file to store used loop devices
+DISKLVFILE=$CLUSTERNAME.disklv # file to store used LV volumes
 
 DISKFILES=`cat $DISKLISTFILE`
 DISKNUMBER=`cat $DISKLISTFILE | wc -l`
@@ -52,15 +52,15 @@ do
   ### deletion with lvremove /dev/$VG/lv$CLUSTERNAME$i
   echo "Removing loopback device $lodevice"
   losetup -vd $lodevice && echo "$lodevice removed." || echo "ehm problem occured!"
-done
+done 
+rm -v $DISKLISTFILE
 
 for lv in $DISKLV
 do
   echo "Removing logical volume $lv"
   lvremove -f $lv && echo "$lv removed." || echo "some problem with lv removal".
 done
-
-
+rm -v $DISKLVFILE
 
 # LOOPDEVICES=`losetup -a`
 ### dynamic load for removal (from losetup -a)

@@ -25,8 +25,8 @@ CLUSTERNAME=$1
 NUMBEROFNODES=$2
 MEMTOTAL=$3
 
-DISKLISTFILE=diskloop.$CLUSTERNAME
-DISKLVFILE=disklv.$CLUSTERNAME # file to store used LV volumes
+DISKLISTFILE=$CLUSTERNAME.diskloop # file to store used loop devices
+DISKLVFILE=$CLUSTERNAME.disklv # file to store used LV volumes
 DISKSIZE=10G
 VG=vg00
 
