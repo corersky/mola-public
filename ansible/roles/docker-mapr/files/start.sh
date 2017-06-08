@@ -36,17 +36,17 @@ touch $DISKLISTFILE
 for i in `seq $NUMBEROFNODES` 
 do 
   echo "Creating LV "
-  if [ ! -f /dev/$VG/lv$CLUSTERNAME_$i ]
+  if [ ! -f /dev/${VG}/lv${CLUSTERNAME}_${i} ]
   then 
-    lvcreate -L $LVSIZE -n lv$CLUSTERNAME_$i $VG && \
-      echo "/dev/$VG/lv$CLUSTERNAME_$i" >> $DISKLVFILE
+    lvcreate -L ${LVSIZE} -n lv${CLUSTERNAME}_${i} ${VG} && \
+      echo "/dev/${VG}/lv${CLUSTERNAME}_${i}" >> $DISKLVFILE
   else
-    echo "Logical volume /dev/$VG/lv$CLUSTERNAME_$i already exists!"
+    echo "Logical volume /dev/${VG}/lv${CLUSTERNAME}_${i} already exists!"
     exit 
   fi
   echo "Creating loop device"
-  losetup /dev/loop$i /dev/$VG/lv$CLUSTERNAME_$i # deletion with losetup -d /dev/loop$i
-  echo "/dev/loop$i" >> $DISKLISTFILE
+  losetup /dev/loop${i} /dev/${VG}/lv${CLUSTERNAME}_${i} # deletion with losetup -d /dev/loop$i
+  echo "/dev/loop${i}" >> $DISKLISTFILE
 done
 
 declare -a disks=(`cat ${DISKLISTFILE}`)
