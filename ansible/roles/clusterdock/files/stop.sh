@@ -1,2 +1,2 @@
 #!/bin/bash
-docker stop $(docker ps | grep cdh | awk '{print $1}')
+docker stop $(docker ps | grep cloudera | awk '{print $1}')
