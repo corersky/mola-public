@@ -52,43 +52,51 @@ You can see directory ```cdh``` for Cloudera and directory ```hdp``` for HortonW
 
 ### Cloudera ```cdh``` folder
 ```
-/opt/clustertest # ls -l hdp
-total 284
---wxrw--wt 1 root root     88 May  4 14:18 clean.sh
---w----r-T 1 root root 259574 May  4 13:19 HDP_hbase_dump_blueprint.json
---w----r-T 1 root root  10866 May  4 13:19 hive_config.json
---w----r-T 1 root root    322 May  4 13:19 hostmapping_multi.json
---wxrw--wt 1 root root   1628 May  4 14:07 start.sh
---wxrw--wt 1 root root     88 May  4 14:06 stop.sh
+/opt/clustertest # ls -l cdh/
+total 16
+--wxrw--wt 1 root root 274 Jun  9 10:39 clean.sh
+--wxrw--wt 1 root root 427 Jun  9 10:39 housekeeping.sh
+--wxrw--wt 1 root root 150 Jun  5 19:03 start.sh
+--wxrw--wt 1 root root  72 Jun  8 14:01 stop.sh
 ```
 start.sh, stop.sh - start/stop scripts
-clean.sh - docker-compose rm 
+clean.sh - cleaning of container images
+housekeeping.sh - removal of all docker images and containers
 
 ### HortonWorks ```hdp``` folder
 ```
-# ls -l cdh
-total 12
---wxrw--wt 1 root root 207 May  4 13:19 housekeeping.sh
---wxrw--wt 1 root root 150 May  4 13:19 start.sh
---wxrw--wt 1 root root  67 May  4 14:28 stop.sh
+/opt/clustertest # ls -l hdp/
+total 292
+--wxrw--wt 1 root root    283 Jun  9 10:40 clean.sh
+--w----r-T 1 root root 259574 Jun  5 19:03 HDP_hbase_dump_blueprint.json
+--w----r-T 1 root root  10866 Jun  5 19:03 hive_config.json
+--w----r-T 1 root root    322 Jun  5 19:03 hostmapping_multi.json
+--wxrw--wt 1 root root    422 Jun  9 10:39 housekeeping.sh
+--wxrw--wt 1 root root    351 Jun  5 19:03 repo-source.sh
+--wxrw--wt 1 root root   1687 Jun  6 08:18 start.sh
+--wxrw--wt 1 root root    112 Jun  5 19:03 stop.sh
 ```
 start.sh, stop.sh - start/stop scripts
+clean.sh - cleaning of container images
 housekeeping.sh - removal of all docker images and containers 
+HDP_hbase_dump_blueprint.json - Ambari blueprint
+hostmapping_multi.json - Ambari hosts definition
+hive_config.json - Ambari modification for Hive  
+repo-source.sh - HDP and Ambari repository definition
 
 ### MapR ```mapr``` folder
 ```
-/opt/clustertest/mapr # ls -al
-total 32
-drwxr-xr-x 2 root root 4096 Jun  8 10:51 .
-drwxr-xr-x 5 root root 4096 Jun  5 19:03 ..
--rw-r--r-- 1 root root   33 Jun  8 10:51 CLUSTERTEST.diskloop
--rw-r--r-- 1 root root   78 Jun  8 10:51 CLUSTERTEST.disklv
+/opt/clustertest # ls -l mapr/
+total 24
+--wxrw--wt 1 root root  269 Jun  9 10:40 clean.sh
+--wxrw--wt 1 root root  423 Jun  9 10:40 housekeeping.sh
 --wxrw--wt 1 root root  233 Jun  5 19:04 setup-host.sh
 --wxrw--wt 1 root root 4862 Jun  8 10:50 start.sh
 --wxrw--wt 1 root root 1804 Jun  8 10:14 stop.sh
 ```
 start.sh, stop.sh - start/stop scripts
-CLUSTERTEST.diskloop and CLUSTERTEST.disklv are directories with stored values of used disks for MapR instance CLUSTERTEST
+clean.sh - cleaning of container images
+housekeeping.sh - removal of all docker images and containers CLUSTERTEST.diskloop and CLUSTERTEST.disklv are directories with stored values of used disks for MapR instance CLUSTERTEST
 
 ### Starting and stopping scripts
 | Distribution | Cloudera | HortonWorks | MapR | 
