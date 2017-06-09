@@ -1,8 +1,10 @@
 #!/bin/bash
-if [ -f nohup.out] 
-then
-  echo Removing nohup.out output
-  rm -vf nohup.out
-fi
-docker ps -a -f status=exited | grep hdp | awk '{print $2}' | xargs docker rm
-docker images | grep hdp | awk '{print $3}' | xargs docker rmi 
+
+DIST="hdp"
+echo "Removing ${DIST} containers."
+CONTAINERS=`docker ps -a -q -f status=exited | grep ${DIST} | awk '{print $1}'`
+[ ! -z ${CONTAINERS} ] && echo ${CONTAINERS} | xargs docker rm 
+
+echo "Removing ${DIST} images."
+IMAGES=`docker images | grep ${DIST} | awk '{print $3}'`
+[ ! -z ${IMAGES} ] && echo ${IMAGES} | xargs docker rmi -f

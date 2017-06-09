@@ -1,3 +1,10 @@
 #!/bin/bash
-docker ps -a -f status=exited | grep mapr | awk '{print $1}' | xargs docker rm
-docker images | grep mapr | awk '{print $3}' | xargs docker rmi
+
+DIST="mapr"
+echo "Removing ${DIST} containers."
+CONTAINERS=`docker ps -a -q -f status=exited | grep ${DIST} | awk '{print $1}'`
+[ ! -z ${CONTAINERS} ] && echo ${CONTAINERS} | xargs docker rm 
+
+echo "Removing ${DIST} images."
+IMAGES=`docker images | grep ${DIST} | awk '{print $3}'`
+[ ! -z ${IMAGES} ] && echo ${IMAGES} | xargs docker rmi -f
