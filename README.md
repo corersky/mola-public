@@ -96,7 +96,8 @@ CLUSTERTEST.diskloop and CLUSTERTEST.disklv are directories with stored values o
 | Utility | Cloudera Manager | Ambari | Mapr Control System  |
 | Start script | ```/opt/clustertest/cdh/start.sh``` | ```/opt/clustertest/hdp/start.sh```  | ```/opt/clustertest/mapr/start.sh``` Usage : ./start.sh ClusterName NumberOfNodes MemSize-in-kB  |
 | Stop script | ```/opt/clustertest/cdh/stop.sh``` | ```/opt/clustertest/hdp/stop.sh``` | ```/opt/clustertest/mapr/stop.sh``` Usage : ./stop.sh ClusterName |
-| Cleaning script | ```/opt/clustertest/cdh/clean.sh``` | ```/opt/clustertest/hdp/clean.sh``` | | 
+| Cleaning script | ```/opt/clustertest/cdh/clean.sh``` | ```/opt/clustertest/hdp/clean.sh``` | ```/opt/clustertest/mapr/clean.sh``` | 
+| Housekeeping script | ```/opt/clustertest/cdh/housekeeping.sh``` | ```/opt/clustertest/hdp/housekeeping.sh``` | ```/opt/clustertest/mapr/housekeeping.sh``` | 
 | Download time | ~40 min. | ~40 min. | ~12min. |
 | Starting time | ~10 min. | ~15 min. | ~4min. | 
 | Stopping time | ~1 min. | ~2 min. | ~1min. |
