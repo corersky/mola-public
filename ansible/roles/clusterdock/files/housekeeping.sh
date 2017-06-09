@@ -1,4 +1,6 @@
 #!/bin/bash
+# Housekeeping script for clustertest 
+# Created by michal@maxian.sk
 
 DIST="cloudera"
 echo "Removing ${DIST} containers."
