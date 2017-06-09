@@ -4,4 +4,7 @@ then
   echo Removing nohup.out output
   rm -vf nohup.out
 fi
-docker ps -a -f status=exited | grep hdp | awk '{print $2}' | xargs docker rm
+DIST="hdp"
+echo "Removing ${DIST} containers."
+CONTAINERS=`docker ps -a -q -f status=exited | grep ${DIST} | awk '{print $1}'`
+[ ! -z ${CONTAINERS} ] && echo ${CONTAINERS} | xargs docker rm 
