@@ -2,9 +2,11 @@
 
   roles:
     - bootstrap
+    - docker
     - clusterdock
     - docker-hdp
     - docker-mapr
+    - datameer-docker
  #   - Stouts.openvpn
 
   vars:

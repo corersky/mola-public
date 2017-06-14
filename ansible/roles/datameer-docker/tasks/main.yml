@@ -1,0 +1,15 @@
+---
+
+- name: setting datameer docker directory
+  file: path={{item}} state=directory
+  with_items:
+    - /opt/clustertest
+    - /opt/clustertest/datameer-docker
+
+- name: uploading files
+  copy: 
+    src: "{{item}}"
+    dest: /opt/clustertest/datameer-docker
+    mode: 640
+  with_fileglob:
+    - "*"
