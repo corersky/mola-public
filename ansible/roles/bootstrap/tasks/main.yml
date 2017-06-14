@@ -20,5 +20,3 @@
     - libffi-dev  
     - libxml2-dev 
     - libxmlsec1-dev
-
-- include: docker.yml
