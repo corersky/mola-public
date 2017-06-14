@@ -7,12 +7,6 @@
     - /opt/clustertest
     - /opt/clustertest/mapr
 
-- lineinfile:
-    path: /etc/default/docker
-    regexp: '^DOCKER_OPTS='
-    line: 'DOCKER_OPTS="--dns 8.8.8.8 --dns 8.8.4.4 -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock --storage-driver=aufs -b bridge0 --fixed-cidr=10.10.100.0/24"'
-  notify: restart docker
-
 ### superseeded by launch-cluster.sh modified script
 #- name: clone directory
 #  git:
