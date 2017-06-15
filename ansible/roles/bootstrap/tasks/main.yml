@@ -11,9 +11,9 @@
     - python3-pip
     - git
     - zip
-    - dos2unix
-    - iptables-persistent
-    - nginx
+#    - dos2unix
+#    - iptables-persistent
+#    - nginx
     - lvm2
     - build-essential 
     - libssl-dev 
