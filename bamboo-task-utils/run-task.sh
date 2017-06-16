@@ -22,7 +22,7 @@ BAMBOO_JDK_DEFAULT='JDK-1.7'
 GRADLE_WRAPPER='./gradlew'
 GRADLE_TMP_BASE='/tmp/gradlehome'
 buildProperties="src/build/ant/build.properties"
-PARQUET='-Duse-parquet-storage=true'
+PARQUET='-Duse-parquet-storage=true -DuseParquetStorage=true'
 distRegex='^[a-zA-Z0-9.-]+$'
 
 declare -A myEnvVariables # fresh set of envVars to fill on a per job basis
