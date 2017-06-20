@@ -1,8 +1,8 @@
 - hosts: all
 
   roles:
-    - bootstrap
-    - docker
+#    - bootstrap
+#    - docker
     - clusterdock
     - docker-hdp
     - docker-mapr

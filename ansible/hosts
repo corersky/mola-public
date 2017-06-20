@@ -1,4 +1,4 @@
 [AWS]
 #clustertest ansible_connection=ssh ansible_host=ec2-54-77-251-164.eu-west-1.compute.amazonaws.com ansible_user=max 
-docker-05 ansible_host=build-docker-05-prod.datameer.lan ansible_user=mmaxian ask_sudo=True
+#docker-05 ansible_host=build-docker-05-prod.datameer.lan ansible_user=mmaxian ask_sudo=True
 docker-06 ansible_host=build-docker-06-prod.datameer.lan ansible_user=mmaxian ask_sudo=True
