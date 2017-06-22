@@ -3,7 +3,7 @@
 - name: setting docker-mapr
   file: path={{item}} state=directory
   with_items:
-    - /opt/docker-mapr
+#    - /opt/docker-mapr
     - /opt/clustertest
     - /opt/clustertest/mapr
 
