@@ -20,7 +20,7 @@ cd mola-public/ansible
 
 ## Used hosts
 To change destination you should create new hostgroup and add machines there. 
-To change authorized user changed ansible_user to your login credentials.
+To change user change ansible_user to your valid login credentials.
 
 ```
 $ cat ansible/hosts
@@ -45,6 +45,8 @@ clustertest ansible_connection=ssh ansible_host=ec2-54-154-134-102.eu-west-1.com
 **sudo mode**
 ```ansible-playbook clustertest.yml -i hosts -s```
 
+**sudo mode with ask for sudo password**
+```ansible-playbook clustertest.yml -i hosts -sK```
 
 ## clustertest scripts
 Scripts are deployed in ```/opt/clustertest```.
