@@ -606,7 +606,10 @@ function runJob() {
         # jobNames[localDB]="$(getGB 'Local Database Tests')"
         'localDB')
             echoInfo "Running...$jobInQuestion"
-            if atLeastVersion 6; then
+            if atLeastVersion 6.4; then
+                # DAP-32508: new database tests running on in-house DBs
+                runGradle 17 19 'integTest -Dtest.groups=db -PtestGroups=db'
+            else if atLeastVersion 6; then
                 # with issue DAP-27052 we convert the tests runs build completely to gradle and therefore some of the system properties to parameters
                 runGradle 17 19 'integTest -Dtest.groups=db_netezza -PtestGroups=db_netezza'
             else
