@@ -61,9 +61,9 @@ total 16
 --wxrw--wt 1 root root 150 Jun  5 19:03 start.sh
 --wxrw--wt 1 root root  72 Jun  8 14:01 stop.sh
 ```
-start.sh, stop.sh - start/stop scripts
-clean.sh - cleaning of container images
-housekeeping.sh - removal of all docker images and containers
+* start.sh, stop.sh - start/stop scripts
+* clean.sh - cleaning of container images
+* housekeeping.sh - removal of all docker images and containers
 
 ### HortonWorks ```hdp``` folder
 ```
@@ -78,13 +78,13 @@ total 292
 --wxrw--wt 1 root root   1687 Jun  6 08:18 start.sh
 --wxrw--wt 1 root root    112 Jun  5 19:03 stop.sh
 ```
-start.sh, stop.sh - start/stop scripts
-clean.sh - cleaning of container images
-housekeeping.sh - removal of all docker images and containers 
-HDP_hbase_dump_blueprint.json - Ambari blueprint
-hostmapping_multi.json - Ambari hosts definition
-hive_config.json - Ambari modification for Hive  
-repo-source.sh - HDP and Ambari repository definition
+* start.sh, stop.sh - start/stop scripts
+* clean.sh - cleaning of container images
+* housekeeping.sh - removal of all docker images and containers 
+* HDP_hbase_dump_blueprint.json - Ambari blueprint
+* hostmapping_multi.json - Ambari hosts definition
+* hive_config.json - Ambari modification for Hive  
+* repo-source.sh - HDP and Ambari repository definition
 
 ### MapR ```mapr``` folder
 ```
@@ -96,9 +96,10 @@ total 24
 --wxrw--wt 1 root root 4862 Jun  8 10:50 start.sh
 --wxrw--wt 1 root root 1804 Jun  8 10:14 stop.sh
 ```
-start.sh, stop.sh - start/stop scripts
-clean.sh - cleaning of container images
-housekeeping.sh - removal of all docker images and containers CLUSTERTEST.diskloop and CLUSTERTEST.disklv are directories with stored values of used disks for MapR instance CLUSTERTEST
+* start.sh, stop.sh - start/stop scripts
+* clean.sh - cleaning of container images
+* housekeeping.sh - removal of all docker images and containers 
+* CLUSTERTEST.diskloop and CLUSTERTEST.disklv are files with values of used disks for MapR instance CLUSTERTEST
 
 ### Starting and stopping scripts
 | Distribution | Cloudera | HortonWorks | MapR | 
