@@ -7,12 +7,20 @@ Automated testing for Cloudera and HortonWorks Hadoop ecosystem.
 ## Ansible environment setup
 Check if you have ansible installed:
 - Linux ```apt install ansible```
-- MacOSX ```brew install ansible```
-- on Windows install ansible with pip ```pip install ansible```
+- OSX ```brew install ansible```
+- on Windows install ansible with pip (it's possible to use pip also on Linux and OSX) ```pip install ansible```
+
+### Ansible prerequisities 
+* python
+* Jinja2
+* PyYAML
+* parmiko
+* httplib2
+* sshpass
 
 [Installation procedures for Ansible](http://docs.ansible.com/ansible/intro_installation.html)
 
-### Clone ansible tasks repository
+## Clone ansible tasks repository
 ```
 git clone git@github.com:Datameer-Inc/mola-public.git
 cd mola-public/ansible
@@ -45,7 +53,7 @@ clustertest ansible_connection=ssh ansible_host=ec2-54-154-134-102.eu-west-1.com
 **sudo mode**
 ```ansible-playbook clustertest.yml -i hosts -s```
 
-**sudo mode with ask for sudo password**
+**sudo mode with query for sudo password**
 ```ansible-playbook clustertest.yml -i hosts -sK```
 
 ## clustertest scripts
