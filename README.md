@@ -17,7 +17,7 @@ Check if you have ansible installed:
 * python
 * Jinja2
 * PyYAML
-* parmiko
+* paramiko
 * httplib2
 * sshpass
 
