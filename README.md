@@ -9,7 +9,8 @@ Automated testing for Cloudera and HortonWorks Hadoop ecosystem.
 | --- | --- |
 | Linux | ```apt install ansible``` |
 | OSX | ```brew install ansible``` |
-| on Windows install ansible with pip (it's possible to use pip also on Linux and OSX) | ```pip install ansible``` |
+| on Windows install ansible with pip | ```pip install ansible``` |
+_You can use pip also on Linux and OSX._
 
 ### Ansible prerequisities 
 * python
