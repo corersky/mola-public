@@ -55,9 +55,13 @@ clustertest ansible_connection=ssh ansible_host=ec2-54-154-134-102.eu-west-1.com
 | sudo mode | ```ansible-playbook clustertest.yml -i hosts -s``` |
 | sudo mode with query for sudo password | ```ansible-playbook clustertest.yml -i hosts -sK``` |
 
-## clustertest scripts
+# Clustertest scripts
 Scripts are deployed in ```/opt/clustertest```.
-You can see directory ```cdh``` for Cloudera and directory ```hdp``` for HortonWorks stack. 
+
+You can see directories: 
+* ```cdh``` for Cloudera and directory 
+* ```hdp``` for HortonWorks stack and 
+* ```mapr``` for MapR
 
 ### Cloudera ```cdh``` folder
 ```
@@ -121,7 +125,7 @@ total 24
 | Stopping time | ~1 min. | ~2 min. | ~1min. |
 
 
-# Hadoop in dockers 
+# Hadoop in docker containers 
 ## Cloudera
 ### Schema
 ![Cloudera schema](images/cdh.png)
