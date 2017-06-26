@@ -121,7 +121,12 @@ total 24
 | Stopping time | ~1 min. | ~2 min. | ~1min. |
 
 
-#### Cloudera docker status
+# Hadoop in dockers 
+## Cloudera
+### Schema
+![Cloudera schema](images/cdh.png)
+
+### Docker containers configuration
 ```
 /opt/clustertest/cdh # docker ps
 CONTAINER ID        IMAGE                                                        COMMAND             CREATED             STATUS              PORTS                                              NAMES
@@ -131,7 +136,11 @@ CONTAINER ID        IMAGE                                                       
 15e9e562cbd2        docker.io/cloudera/clusterdock:cdh580_cm581_primary-node     "/sbin/init"        2 hours ago         Up 2 hours          0.0.0.0:32773->7180/tcp, 0.0.0.0:32772->8888/tcp   clever_hypatia
 ```
 
-#### HortonWorks docker status
+## HowrtonWorks
+### Schema
+![HortonWorks schema](images/hdp.png)
+
+### Docker containers configuration
 ```
 /opt/clustertest/hdp # docker ps
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                NAMES
@@ -141,7 +150,11 @@ d58973a7e72b        hdp/ambari-server   "/bin/sh -c /start.sh"   12 seconds ago 
 178272b04fb1        hdp/postgres        "docker-entrypoint..."   12 seconds ago      Up 10 seconds       5432/tcp     compose_postgres.dev_1
 ```
 
-#### MapR docker status
+## MapR
+### Schema
+![MapR schema](images/mapr.png)
+
+### Docker containers configuration
 ```
 /opt/clustertest/hdp # docker ps
 CONTAINER ID        IMAGE                                          COMMAND                  CREATED             STATUS              PORTS               NAMES
