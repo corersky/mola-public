@@ -63,7 +63,7 @@ You can see directories:
 * ```hdp``` for HortonWorks stack and 
 * ```mapr``` for MapR
 
-### Cloudera ```cdh``` folder
+## Cloudera ```cdh``` folder
 ```
 /opt/clustertest # ls -l cdh/
 total 16
@@ -76,7 +76,7 @@ total 16
 * clean.sh - cleaning of container images
 * housekeeping.sh - removal of all docker images and containers
 
-### HortonWorks ```hdp``` folder
+## HortonWorks ```hdp``` folder
 ```
 /opt/clustertest # ls -l hdp/
 total 292
@@ -97,7 +97,7 @@ total 292
 * hive_config.json - Ambari modification for Hive  
 * repo-source.sh - HDP and Ambari repository definition
 
-### MapR ```mapr``` folder
+## MapR ```mapr``` folder
 ```
 /opt/clustertest # ls -l mapr/
 total 24
@@ -112,7 +112,7 @@ total 24
 * housekeeping.sh - removal of all docker images and containers 
 * CLUSTERTEST.diskloop and CLUSTERTEST.disklv are files with values of used disks for MapR instance CLUSTERTEST
 
-### Starting and stopping scripts
+## Starting and stopping scripts
 | Distribution | Cloudera | HortonWorks | MapR | 
 | --- | :---: | :---: | :---: | 
 | Utility | Cloudera Manager | Ambari | Mapr Control System  |
