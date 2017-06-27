@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 if [[ -z $(which docker)  ]] ; then
         echo " docker could not be found on this server. Please install Docker version 1.6.0 or later."
 	echo " If it is already installed Please update the PATH env variable." 
@@ -23,12 +25,18 @@ CLUSTERNAME=$1
 
 DISKLISTFILE=$CLUSTERNAME.diskloop # file to store used loop devices
 DISKLVFILE=$CLUSTERNAME.disklv # file to store used LV volumes
+IPFILE=$CLUSTERNAME.hosts
 
 DISKFILES=`cat $DISKLISTFILE`
 DISKNUMBER=`cat $DISKLISTFILE | wc -l`
 DISKLV=`cat $DISKLVFILE`
+CLUSTER_IPs=`cat $IPFILE`
 
 DOCKER_CONTAINERS=`docker ps | grep maprtech | awk '{print $1}'`
+
+cldbip=`head -1 $IPFILE | awk '{print $1}'`;
+OUT_MGMT_PORT=`head -1 $IPFILE | awk '{print $2}'`;
+IN_MGMT_PORT=`head -1 $IPFILE | awk '{print $3}'`;
 
 if [ ! -f $DISKLISTFILE ]; then
  echo "$DISKLISTFILE doesn't exist!"
@@ -61,6 +69,11 @@ do
   lvremove -f $lv && echo "$lv removed." || echo "some problem with lv removal".
 done
 rm -v $DISKLVFILE
+
+echo "Removing port forwarding $OUT_MGMT_PORT to $cldbip:$IN_MGMT_PORT."
+iptables -D PREROUTING -t nat -i eth0 -p tcp --dport ${OUT_MGMT_PORT} -j DNAT --to ${cldbip}:${IN_MGMT_PORT} && \
+iptables -D FORWARD -p tcp -d ${cldbip} --dport ${OUT_MGMT_PORT} -j ACCEPT && \
+echo "done."
 
 # LOOPDEVICES=`losetup -a`
 ### dynamic load for removal (from losetup -a)
