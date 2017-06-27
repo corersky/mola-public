@@ -140,7 +140,7 @@ CONTAINER ID        IMAGE                                                       
 15e9e562cbd2        docker.io/cloudera/clusterdock:cdh580_cm581_primary-node     "/sbin/init"        2 hours ago         Up 2 hours          0.0.0.0:32773->7180/tcp, 0.0.0.0:32772->8888/tcp   clever_hypatia
 ```
 
-## HowrtonWorks
+## HortonWorks
 ### Schema
 ![HortonWorks schema](images/hdp.png)
 
