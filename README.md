@@ -144,6 +144,14 @@ CONTAINER ID        IMAGE                                                       
 ### Schema
 ![HortonWorks schema](images/hdp.png)
 
+### HortonWorks images
+```
+hdp/master             latest                        0a5183cb77ee        2 weeks ago         9.82 GB
+hdp/worker             latest                        0a5183cb77ee        2 weeks ago         9.82 GB
+hdp/ambari-server      latest                        cf9ad073aa46        2 weeks ago         2.54 GB
+hdp/postgres           latest                        151886b75369        2 weeks ago         314 MB
+```
+
 ### Docker containers configuration
 ```
 /opt/clustertest/hdp # docker ps
