@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 MAPRVER="5.2.0"
 # Docker Checks
 if [[ -z $(which docker)  ]] ; then
@@ -21,14 +23,22 @@ then
 	exit
 fi
 
-CLUSTERNAME=$1
+[ ${CLUSTERNAME}"xxx" = "xxx" ] && CLUSTERNAME=$1
 NUMBEROFNODES=$2
 MEMTOTAL=$3
 
-DISKLISTFILE=$CLUSTERNAME.diskloop # file to store used loop devices
-DISKLVFILE=$CLUSTERNAME.disklv # file to store used LV volumes
+DISKLISTFILE=${CLUSTERNAME}.diskloop # file to store used loop devices
+DISKLVFILE=${CLUSTERNAME}.disklv # file to store used LV volumes
 LVSIZE=10G
 VG=vg00
+
+## hadoop port exposure
+[ ${OUT_MGMT_PORT}"xxx" = "xxx" ] && OUT_MGMT_PORT="8080"
+[ ${IN_MGMT_PORT}"xxx" = "xxx" ] && IN_MGMT_PORT="8443"
+## number of nodes
+HDP_NODE_COUNT=3
+## volume group 
+HDP_VG=vg00
 
 ### diskfile creation
 touch $DISKLVFILE
@@ -87,6 +97,13 @@ cldbip=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${cldb_cid} 
 container_ips[0]=$cldbip
 echo "Control Node IP : $cldbip		Starting the cluster: https://${cldbip}:8443/    login:mapr   password:mapr"
 
+echo "Setting port forwarding $OUT_MGMT_PORT to $cldbip:$IN_MGMT_PORT."
+iptables -A PREROUTING -t nat -i eth0 -p tcp --dport ${OUT_MGMT_PORT} -j DNAT --to ${cldbip}:${IN_MGMT_PORT} && \
+iptables -A FORWARD -p tcp -d ${cldbip} --dport ${OUT_MGMT_PORT} -j ACCEPT && \
+echo "done."
+
+echo ${cldbip} ${OUT_MGMT_PORT} ${IN_MGMT_PORT} > ${CLUSTERNAME}.hosts
+
 echo
 echo "Installing mapr-hbase-master and mapr-jobtracker"
 sshpass -p "mapr" ssh -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${cldbip} 'yum -y install mapr-hbase-master mapr-jobtracker'
@@ -120,6 +137,7 @@ do
 	sshpass -p "mapr" ssh -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${ip} 'cat /tmp/hosts >> /etc/hosts'
   sshpass -p "mapr" ssh -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${ip} 'yum -y install mapr-hbase'
   sshpass -p "mapr" ssh -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${ip} '/opt/mapr/server/configure.sh -R; service mapr-warden restart'
+  echo ${ip} >> ${CLUSTERNAME}.hosts
 done
 
 # For Spark
