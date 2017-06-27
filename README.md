@@ -158,6 +158,12 @@ d58973a7e72b        hdp/ambari-server   "/bin/sh -c /start.sh"   12 seconds ago 
 ### Schema
 ![MapR schema](images/mapr.png)
 
+### MapR images
+```
+maprtech/mapr-data-cent67      5.2.0               0d2410407dbb        10 months ago       2.86 GB
+maprtech/mapr-control-cent67   5.2.0               1a76b9bedd14        10 months ago       2.86 GB
+```
+
 ### Docker containers configuration
 ```
 /opt/clustertest/hdp # docker ps
