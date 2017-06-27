@@ -130,6 +130,13 @@ total 24
 ### Schema
 ![Cloudera schema](images/cdh.png)
 
+### Cloudera images
+```
+cloudera/clusterdock   latest                        3e15a0e12577        9 months ago        463 MB
+cloudera/clusterdock   cdh580_cm581_secondary-node   31b6f9ea419e        11 months ago       4.64 GB
+cloudera/clusterdock   cdh580_cm581_primary-node     1e180df693af        11 months ago       4.5 GB
+```
+
 ### Docker containers configuration
 ```
 /opt/clustertest/cdh # docker ps
