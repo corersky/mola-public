@@ -23,28 +23,28 @@ fi
 
 CLUSTERNAME=$1
 
-DISKLISTFILE=$CLUSTERNAME.diskloop # file to store used loop devices
-DISKLVFILE=$CLUSTERNAME.disklv # file to store used LV volumes
-IPFILE=$CLUSTERNAME.hosts
+DISKLISTFILE=${CLUSTERNAME}.diskloop # file to store used loop devices
+DISKLVFILE=${CLUSTERNAME}.disklv # file to store used LV volumes
+IPFILE=${CLUSTERNAME}.hosts
 
-DISKFILES=`cat $DISKLISTFILE`
-DISKNUMBER=`cat $DISKLISTFILE | wc -l`
-DISKLV=`cat $DISKLVFILE`
-CLUSTER_IPs=`cat $IPFILE`
+DISKFILES=`cat ${DISKLISTFILE}`
+DISKNUMBER=`cat ${DISKLISTFILE} | wc -l`
+DISKLV=`cat ${DISKLVFILE}`
+CLUSTER_IPs=`cat ${IPFILE}`
 
 DOCKER_CONTAINERS=`docker ps | grep maprtech | awk '{print $1}'`
 
-cldbip=`head -1 $IPFILE | awk '{print $1}'`;
-OUT_MGMT_PORT=`head -1 $IPFILE | awk '{print $2}'`;
-IN_MGMT_PORT=`head -1 $IPFILE | awk '{print $3}'`;
+cldbip=`head -1 ${IPFILE} | awk '{print $1}'`
+OUT_MGMT_PORT=`head -1 ${IPFILE} | awk '{print $2}'`
+IN_MGMT_PORT=`head -1 ${IPFILE} | awk '{print $3}'`
 
-if [ ! -f $DISKLISTFILE ]; then
- echo "$DISKLISTFILE doesn't exist!"
+if [ ! -f ${DISKLISTFILE} ]; then
+ echo "${DISKLISTFILE} doesn't exist!"
  exit
 fi
 
-if [ ! -f $DISKLVFILE ]; then
- echo "$DISKLVFILE doesn't exist!"
+if [ ! -f ${DISKLVFILE} ]; then
+ echo "${DISKLVFILE} doesn't exist!"
  exit
 fi
 
@@ -57,11 +57,10 @@ done
 
 for lodevice in $DISKFILES
 do 
-  ### deletion with lvremove /dev/$VG/lv$CLUSTERNAME$i
   echo "Removing loopback device $lodevice"
   losetup -vd $lodevice && echo "$lodevice removed." || echo "ehm problem occured!"
 done 
-rm -v $DISKLISTFILE
+rm -v ${DISKLISTFILE}
 
 for lv in $DISKLV
 do
@@ -74,6 +73,7 @@ echo "Removing port forwarding $OUT_MGMT_PORT to $cldbip:$IN_MGMT_PORT."
 iptables -D PREROUTING -t nat -i eth0 -p tcp --dport ${OUT_MGMT_PORT} -j DNAT --to ${cldbip}:${IN_MGMT_PORT} && \
 iptables -D FORWARD -p tcp -d ${cldbip} --dport ${OUT_MGMT_PORT} -j ACCEPT && \
 echo "done."
+rm -v ${IPFILE}
 
 # LOOPDEVICES=`losetup -a`
 ### dynamic load for removal (from losetup -a)
