@@ -7,10 +7,11 @@ Installation of
 
 ## CDH and HortonWorks
 We're using alpine linux with Java v7 preinstalled.
-Cloudera and HortonWorks uses same Datameer application configuration.
+
+Cloudera and HortonWorks use same Datameer application configuration.
 
 ## MapR
-We're using centos distribution.
+We're using latest CentOS distribution.
 
 ### Requirements
 For MapR there're additional requirement for mapr-client installed from MapR repository.
