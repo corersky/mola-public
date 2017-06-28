@@ -17,7 +17,7 @@
   copy: 
     src: "{{item}}"
     dest: /opt/clustertest/hdp
-    mode: 755
+    mode: "u=rwx,g=rx,o=rx"
   with_fileglob:
     - "*sh"
 
@@ -25,6 +25,6 @@
   copy: 
     src: "{{item}}"
     dest: /opt/clustertest/hdp
-    mode: 644
+    mode: "u=rw,g=r,o=r"
   with_fileglob:
     - "*json"

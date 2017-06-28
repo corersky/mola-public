@@ -18,6 +18,6 @@
   copy: 
     src: "{{item}}"
     dest: /opt/clustertest/mapr
-    mode: 755
+    mode: "u=rwx,g=rx,o=rx"
   with_fileglob:
     - "*sh"

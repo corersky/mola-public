@@ -21,6 +21,6 @@
   copy: 
     src: "{{item}}"
     dest: /opt/clustertest/cdh
-    mode: 755
+    mode: "u=rwx,g=rx,o=rx"
   with_fileglob:
     - "*"
