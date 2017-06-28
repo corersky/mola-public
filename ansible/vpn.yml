@@ -1,0 +1,33 @@
+- hosts: all
+
+  roles:
+    - bootstrap
+    - docker
+    - Stouts.openvpn
+
+  vars:
+    openvpn_enabled: yes                                # The role is enabled
+
+    openvpn_etcdir: /etc/openvpn
+    openvpn_keydir: "{{openvpn_etcdir}}/keys"
+    openvpn_use_system_easyrsa: false                   # Install EasyRSA from system packages
+    
+    openvpn_clients: [myvpn]
+
+    openvpn_key_country: GE
+    openvpn_key_province: GERMANY
+    openvpn_key_city: HALLE
+    openvpn_key_org: "DATAMEER, LTD"
+    openvpn_key_email: michal@maxian.sk
+    openvpn_key_size: 1024
+    openvpn_client_options: []
+
+    openvpn_host: "{{inventory_hostname}}"              # The server address
+    openvpn_port: 1194
+    openvpn_proto: udp
+    openvpn_dev: tun
+    openvpn_server: 10.10.0.0 255.255.255.0
+    openvpn_network: 10.10.0.0/24
+
+    openvpn_unified_client_profiles: no
+    openvpn_use_pam: no
