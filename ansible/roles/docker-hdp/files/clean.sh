@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ -f nohup.out] 
+if [ -f nohup.out ] 
 then
   echo Removing nohup.out output
   rm -vf nohup.out
